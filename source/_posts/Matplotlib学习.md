@@ -238,7 +238,7 @@ yerr = np.linspace(0.05, 0.2, 10)
 plt.errorbar(x,y+3,yerr=yerr,fmt='o-',ecolor='r',elinewidth=2);
 ```
 
-![../_images/index_11_01.png](images/index_11_01.png)
+![/images/index_11_01.png](/images/index_11_01.png)
 
 #### 2. patches
 
@@ -283,7 +283,7 @@ plt.xlim(0,100); #设置x轴分布范围
 plt.show()
 ```
 
-![../_images/index_13_01.png](images/index_13_01.png)
+![/images/index_13_01.png](/images/index_13_01.png)
 
 ```Python
 # Rectangle矩形类绘制直方图
@@ -311,7 +311,7 @@ ax1.set_xlim(0, 100)
 ax1.set_ylim(0, 16);
 ```
 
-![../_images/index_15_01.png](images/index_15_01.png)
+![/images/index_15_01.png](/images/index_15_01.png)
 
 
 
@@ -341,7 +341,7 @@ y = range(1,17)
 plt.bar(np.arange(16), y, alpha=0.5, width=0.5, color='yellow', edgecolor='red', label='The First Bar', lw=3);
 ```
 
-![../_images/index_17_01.png](images/index_17_01.png)
+![/images/index_17_01.png](/images/index_17_01.png)
 
 ```
 # Rectangle矩形类绘制柱状图
@@ -355,7 +355,7 @@ ax1.set_xlim(0, 16)
 ax1.set_ylim(0, 16);
 ```
 
-![../_images/index_19_0.png](images/index_19_0.png)
+![/images/index_19_0.png](/images/index_19_0.png)
 
 ##### b. Polygon-多边形
 
@@ -380,7 +380,7 @@ y2 = np.sin(2 * x)
 plt.fill(x, y1, color = "g", alpha = 0.3);
 ```
 
-![../_images/index_21_0.png](images/index_21_0.png)
+![/images/index_21_0.png](/images/index_21_0.png)
 
 
 ##### c. Wedge-契形
@@ -415,7 +415,7 @@ ax1.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%', shadow=True, s
 ax1.axis('equal'); # Equal aspect ratio ensures that pie is drawn as a circle. 
 ```
 
-![../_images/index_23_0.png](images/index_23_0.png)
+![/images/index_23_0.png](/images/index_23_0.png)
 
 
 
@@ -438,7 +438,7 @@ p.set_array(colors)
 ax1.add_collection(p);
 ```
 
-![../_images/index_25_0.png](images/index_25_0.png)
+![/images/index_25_0.png](/images/index_25_0.png)
 
 #### 3. collections
 
@@ -462,7 +462,7 @@ s = [20*2**n for n in range(len(x))]
 plt.scatter(x,y,s=s) ;
 ```
 
-![../_images/index_27_0.png](images/index_27_0.png)
+![/images/index_27_0.png](/images/index_27_0.png)
 
 #### 4. images
 
@@ -493,7 +493,7 @@ for ax, interp_method in zip(axs.flat, methods):
 plt.tight_layout();#用于自动调整子图的布局，使其更加紧凑。
 ```
 
-![../_images/index_29_0.png](images/index_29_0.png)
+![/images/index_29_0.png](/images/index_29_0.png)
 
 ### 对象容器 - Object container
 
@@ -515,7 +515,7 @@ AxesSubplot(0.125,0.536818;0.775x0.343182)
 [<AxesSubplot:>, <Axes:>]
 ```
 
-![../_images/index_31_1.png](images/index_31_1.png)
+![/images/index_31_1.png](/images/index_31_1.png)
 
 由于`Figure`维持了`current axes`，因此你不应该手动的从`Figure.axes`列表中添加删除元素，而是要通过`Figure.add_subplot()`、`Figure.add_axes()`来添加元素，通过`Figure.delaxes()`来删除元素。但是你可以迭代或者访问`Figure.axes`中的`Axes`，然后修改这个`Axes`的属性。
 
@@ -529,7 +529,7 @@ for ax in fig.axes:
     ax.grid(True)
 ```
 
-![../_images/index_33_0.png](images/index_33_0.png)
+![/images/index_33_0.png](/images/index_33_0.png)
 
 `Figure`也有它自己的`text、line、patch、image`。你可以直接通过`add primitive`语句直接添加。但是注意`Figure`默认的坐标系是以像素为单位，你可能需要转换成figure坐标系：(0,0)表示左下点，(1,1)表示右上点。
 
@@ -555,7 +555,7 @@ rect = ax.patch  # axes的patch是一个Rectangle实例
 rect.set_facecolor('green')
 ```
 
-![../_images/index_35_0.png](images/index_35_0.png)
+![/images/index_35_0.png](/images/index_35_0.png)
 
 `Axes`有许多方法用于绘图，如`.plot()、.text()、.hist()、.imshow()`等方法用于创建大多数常见的`primitive`(如`Line2D，Rectangle，Text，Image`等等）。在`primitives`中已经涉及，不再赘述。
 
@@ -618,7 +618,7 @@ axis.get_view_interval()# 获取轴视角（位置）的间隔
 array([-0.2,  4.2])
 ```
 
-![../_images/index_37_1.png](images/index_37_1.png)
+![/images/index_37_1.png](/images/index_37_1.png)
 
 下面的例子展示了如何调整一些轴和刻度的属性(忽略美观度，仅作调整参考)：
 
@@ -645,7 +645,7 @@ for line in ax1.yaxis.get_ticklines():
     line.set_markeredgewidth(2)# marker粗细
 ```
 
-![../_images/index_39_0.png](images/index_39_0.png)
+![/images/index_39_0.png](/images/index_39_0.png)
 
 #### 4. Tick容器
 
@@ -678,7 +678,7 @@ ax.yaxis.set_tick_params(which='major', labelcolor='green',
                          labelleft=False, labelright=True);
 ```
 
-![../_images/index_41_0.png](images/index_41_0.png)
+![/images/index_41_0.png](/images/index_41_0.png)
 
 ## 子图
 
@@ -706,7 +706,7 @@ for i in range(2):
 fig.tight_layout()
 ```
 
-![../_images/index_3_0.png](images/index_3_0.png)
+![/images/index_3_0.png](/images/index_3_0.png)
 
 `subplots`是基于OO模式的写法，显式创建一个或多个axes对象，然后在对应的子图对象上进行绘图操作。
 还有种方式是使用`subplot`这样基于pyplot模式的写法，每次在指定位置新建一个子图，并且之后的绘图操作都会指向当前子图，本质上`subplot`也是`Figure.add_subplot`的一种封装。
@@ -726,7 +726,7 @@ plt.subplot(224)  # 当三位数都小于10时，可以省略中间的逗号，�
 plt.plot([1,2], 'g');
 ```
 
-![../_images/index_5_0.png](images/index_5_0.png)
+![/images/index_5_0.png](/images/index_5_0.png)
 
 除了常规的直角坐标系，也可以通过`projection`方法创建极坐标系下的图表
 
@@ -742,7 +742,7 @@ plt.subplot(projection='polar') #计算出每个点的面积area，通过200 * r
 plt.scatter(theta, r, c=colors, s=area, cmap='hsv', alpha=0.75);
 ```
 
-![../_images/index_7_0.png](images/index_7_0.png)
+![/images/index_7_0.png](/images/index_7_0.png)
 
 ### 使用 `GridSpec` 绘制非均匀子图
 
@@ -764,7 +764,7 @@ for i in range(2):
 fig.tight_layout()
 ```
 
-![../_images/index_9_0.png](images/index_9_0.png)
+![/images/index_9_0.png](/images/index_9_0.png)
 
 在上面的例子中出现了 `spec[i, j]` 的用法，事实上通过切片就可以实现子图的合并而达到跨图的共能
 
@@ -790,7 +790,7 @@ ax.scatter(np.random.randn(10), np.random.randn(10))
 fig.tight_layout()
 ```
 
-![../_images/index_11_0.png](images/index_11_0.png)
+![/images/index_11_0.png](/images/index_11_0.png)
 
 
 
@@ -809,7 +809,7 @@ ax.axvline(0.5,0.2,0.8)
 ax.axline([0.3,0.3],[0.7,0.7]);
 ```
 
-![../_images/index_13_0.png](images/index_13_0.png)
+![/images/index_13_0.png](/images/index_13_0.png)
 
 使用 `grid` 可以加灰色网格
 
@@ -818,7 +818,7 @@ fig, ax = plt.subplots(figsize=(4,3))
 ax.grid(True)
 ```
 
-![../_images/index_15_0.png](images/index_15_0.png)
+![/images/index_15_0.png](/images/index_15_0.png)
 
 使用 `set_xscale` 可以设置坐标轴的规度（指对数坐标等）
 
@@ -833,7 +833,7 @@ for j in range(2):
 fig.tight_layout()
 ```
 
-![../_images/index_17_0.png](images/index_17_0.png)
+![/images/index_17_0.png](/images/index_17_0.png)
 
 ## 文字
 
@@ -893,7 +893,7 @@ ax.plot([2], [1], 'o')
 ax.annotate('annotate', xy=(2, 1), xytext=(3, 4),arrowprops=dict(facecolor='black', shrink=0.05));
 ```
 
-![../_images/index_3_03.png](images/index_3_03.png)
+![/images/index_3_03.png](/images/index_3_03.png)
 
 #### 2.text - 子图上的文本
 
@@ -918,7 +918,7 @@ font = {'bbox':{'facecolor': 'red', 'alpha': 0.5, 'pad': 10}, 'style':'italic'}
 axes[1].text(0.3, 0.8, 'modify by fontdict', fontdict=font);
 ```
 
-![../_images/index_5_02.png](images/index_5_02.png)
+![/images/index_5_02.png](/images/index_5_02.png)
 
 matplotlib中所有支持的样式参数请参考[官网文档说明](https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.text.html#matplotlib.axes.Axes.text)，大多数时候需要用到的时候再查询即可。
 
@@ -960,7 +960,7 @@ axes[0].set_xlabel('xlabel',labelpad=20,loc='left')
 axes[1].set_xlabel('xlabel', position=(0.2, _), horizontalalignment='left');
 ```
 
-![../_images/index_7_01.png](images/index_7_01.png)
+![/images/index_7_01.png](/images/index_7_01.png)
 
 #### 4.title和suptitle - 子图和画布的标题
 
@@ -981,7 +981,7 @@ axes[0].set_title('This is title',pad=15)
 axes[1].set_title('This is title',pad=6);
 ```
 
-![../_images/index_9_02.png](images/index_9_02.png)
+![/images/index_9_02.png](/images/index_9_02.png)
 
 #### 5.annotate - 子图的注解
 
@@ -1005,7 +1005,7 @@ ax.annotate("",
             );
 ```
 
-![../_images/index_11_02.png](images/index_11_02.png)
+![/images/index_11_02.png](/images/index_11_02.png)
 
 #### 6.字体的属性设置
 
@@ -1028,7 +1028,7 @@ plt.title('坐标系的标题',  fontproperties='Microsoft YaHei', fontsize=20) 
 plt.legend(loc='lower right', prop={"family": 'Microsoft YaHei'}, fontsize=10) ;   # 小示例图的字体设置
 ```
 
-![../_images/index_14_0.png](images/index_14_0.png)
+![/images/index_14_0.png](/images/index_14_0.png)
 
 ### Tick上的文本
 
@@ -1048,7 +1048,7 @@ axs[1].plot(x1, y1)
 axs[1].xaxis.set_ticks(np.arange(0., 10.1, 2.));
 ```
 
-![../_images/index_17_02.png](images/index_17_02.png)
+![/images/index_17_02.png](/images/index_17_02.png)
 
 ```python
 # 使用axis的set_ticklabels方法手动设置标签格式的例子
@@ -1061,7 +1061,7 @@ axs[1].xaxis.set_ticks(ticks)
 axs[1].xaxis.set_ticklabels(tickla);
 ```
 
-![../_images/index_19_01.png](images/index_19_01.png)
+![/images/index_19_01.png](/images/index_19_01.png)
 
 ```python
 #一般绘图时会自动创建刻度，而如果通过上面的例子使用set_ticks创建刻度可能会导致tick的范围与所绘制图形的范围不一致的问题。
@@ -1083,7 +1083,7 @@ print(axs[1].xaxis.get_ticklines());
 <a list of 14 Line2D ticklines objects>
 ```
 
-![../_images/index_21_1.png](images/index_21_1.png)
+![/images/index_21_1.png](/images/index_21_1.png)
 
 #### 2.Tick Locators and Formatters
 
@@ -1109,7 +1109,7 @@ formatter = matplotlib.ticker.FormatStrFormatter('%1.5f')
 axs[1, 1].xaxis.set_major_formatter(formatter);
 ```
 
-![../_images/index_23_01.png](images/index_23_01.png)
+![/images/index_23_01.png](/images/index_23_01.png)
 
 ```python
 # 接收函数的例子
@@ -1125,7 +1125,7 @@ ax.plot(x1, y1)
 ax.xaxis.set_major_formatter(formatoddticks);
 ```
 
-![../_images/index_25_01.png](images/index_25_01.png)
+![/images/index_25_01.png](/images/index_25_01.png)
 
 ##### b) Tick Locators
 
@@ -1157,7 +1157,7 @@ locator = matplotlib.ticker.FixedLocator([0,7,14,21,28])
 axs[1, 1].xaxis.set_major_locator(locator);
 ```
 
-![../_images/index_27_01.png](images/index_27_01.png)
+![/images/index_27_01.png](/images/index_27_01.png)
 
 此外`matplotlib.dates` 模块还提供了特殊的设置日期型刻度格式和位置的方式
 
@@ -1175,7 +1175,7 @@ ax.plot(time, y1)
 ax.tick_params(axis='x', rotation=70);
 ```
 
-![../_images/index_29_01.png](images/index_29_01.png)
+![/images/index_29_01.png](/images/index_29_01.png)
 
 ### legend（图例）
 
@@ -1199,7 +1199,7 @@ ax.tick_params(axis='x', rotation=70);
 
 以下面这个图为例，右侧的方框中的共有两个legend entry；两个legend key，分别是一个蓝色和一个黄色的legend key；两个legend label，一个名为‘Line up’和一个名为‘Line Down’的legend label
 
-![img](images/1442273f150044139d54b6c2c6384e37.png)
+![img](/images/1442273f150044139d54b6c2c6384e37.png)
 
 图例的绘制同样有OO模式和pyplot模式两种方式，写法都是一样的，使用legend()即可调用。
 以下面的代码为例，在使用legend方法时，我们可以手动传入两个变量，句柄和标签，用以指定条目中的特定绘图对象和显示的标签值。
@@ -1216,7 +1216,7 @@ ax.legend(handles = [line_up, line_down], labels = ['Line Up', 'Line Down']);
 #使用ax.legend函数创建图例，传入两个参数：handles表示图例中显示的对象列表，这里是[line_up, line_down]；labels表示对应图例中每个对象的标签，这里是['Line Up', 'Line Down']。
 ```
 
-![../_images/index_31_0.png](images/index_31_0.png)
+![/images/index_31_0.png](/images/index_31_0.png)
 
 legend其他常用的几个参数如下：
 
@@ -1246,7 +1246,7 @@ for i in range(4):
 fig.tight_layout()
 ```
 
-![../_images/index_33_01.png](images/index_33_01.png)
+![/images/index_33_01.png](/images/index_33_01.png)
 
 **设置图例边框及背景**
 
@@ -1260,7 +1260,7 @@ axes[1].legend(edgecolor='blue') #设置图例边框颜色
 axes[2].legend(facecolor='gray'); #设置图例背景颜色,若无边框,参数无效
 ```
 
-![../_images/index_35_01.png](images/index_35_01.png)
+![/images/index_35_01.png](/images/index_35_01.png)
 
 **设置图例标题**
 
@@ -1270,7 +1270,7 @@ ax.plot([1,2,3],label='label')
 ax.legend(title='legend title');
 ```
 
-![../_images/index_37_0.png](images/index_37_0.png)
+![/images/index_37_0.png](/images/index_37_0.png)
 
 ## 样式色彩
 
@@ -1446,7 +1446,7 @@ x = np.random.randn(50)
 y = np.random.randn(50)
 plt.scatter(x,y,c=x,cmap='RdPu');
 ```
-<img src="/images/index_28_0.png" alt="../_images/index_28_0.png" style="zoom:50%;" />
+<img src="/images/index_28_0.png" alt="/images/index_28_0.png" style="zoom:50%;" />
 
 在以下官网页面可以查询上述五种colormap的字符串表示和颜色图的对应关系
 https://matplotlib.org/stable/tutorials/colors/colormaps.html
