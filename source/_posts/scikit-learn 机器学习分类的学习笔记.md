@@ -218,15 +218,11 @@ CV指"Cross-Validation"，指交叉验证。交叉验证是一种模型评估的
 
 SVC的缩写是Support Vector Classifier，它是支持向量机（Support Vector Machine）的一种变体。SVC是一种用于分类问题的监督学习算法。
 
-{% folding blue::SVC %}
-
 支持向量机通过寻找一个最优的超平面来将不同类别的样本点分开。SVC与线性SVM类似，但在处理线性不可分问题时使用了软间隔（soft margin）的概念。软间隔允许一些样本点位于超平面的错误一侧，以提高模型的泛化能力。
 
 SVC可以使用不同的核函数来处理非线性分类问题，常用的核函数包括线性核、多项式核和高斯核等。通过引入核函数，SVC将样本点映射到更高维的特征空间，从而在特征空间中找到最优的超平面。
 
 SVC的优点包括泛化能力强、对于高维数据和非线性问题有较好的表现，同时也可以通过调整参数来控制模型的复杂度。
-
- {% endfolding %}
 
 ```python
 from sklearn.model_selection import GridSearchCV
