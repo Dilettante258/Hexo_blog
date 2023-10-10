@@ -119,7 +119,7 @@ And the title.
 ax.set_title('AAPL Share Price', color = 'white')
 ```
 
-![image-20230805235945892](../images/image-20230805235945892.png)
+![image-20230805235945892](images/image-20230805235945892.png)
 
 The final complete code is as follows:
 

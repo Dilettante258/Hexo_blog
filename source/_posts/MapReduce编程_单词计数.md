@@ -14,7 +14,7 @@ $ ./start-all.sh				# 启动脚本
 $ jps							# 查看HDFS服务启动情况
 ```
 
-![image-20230928164932321](../images/image-20230928164932321.png)
+![image-20230928164932321](images/image-20230928164932321.png)
 
 #### 准备数据文件
 
@@ -38,7 +38,7 @@ day day up
 $ hdfs dfs -put /data/dataset/word.txt /
 ```
 
-![image-20230928172907664](../images/image-20230928172907664.png)
+![image-20230928172907664](images/image-20230928172907664.png)
 
 #### 创建Map/Reduce项目
 
@@ -47,7 +47,7 @@ $ hdfs dfs -put /data/dataset/word.txt /
 3. 创建一个名为【lib】的文件夹，并将从指定位置（/data/software/hadoop3_lib/）获取的 Hadoop 相关的 JAR 包放入该文件夹中。
 4. 将 lib 文件夹下的所有 JAR 包导入到项目的环境变量中，方法是在 lib 文件夹上右键单击，选择【build path】->【add to build path】。此后，你会在项目中看到一个名为【Referenced Libraries】的列表项。
 
-![image-20230926143715102](../images/image-20230926143715102.png)
+![image-20230926143715102](images/image-20230926143715102.png)
 
 
 
@@ -174,7 +174,7 @@ public class WordCountDriver {
 
   1、运行程序。
 
-![image-20230926145222940](../images/image-20230926145222940.png)
+![image-20230926145222940](images/image-20230926145222940.png)
 
   2、如果一切正常，则可以在HDFS上查看统计的结果文件。在终端窗口中，执行如下命令：
 
@@ -184,4 +184,4 @@ $ hdfs dfs -cat /word-output/part-r-00000
 
   可以看到单词计数的结果如下：
 
-![image-20230926145307485](../images/image-20230926145307485.png)
+![image-20230926145307485](images/image-20230926145307485.png)
