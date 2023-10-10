@@ -112,7 +112,15 @@ kramed:
   breaks: true
   smartLists: true
   smartypants: true
-
+sitemap:
+  path: 
+    - sitemap.xml
+    - sitemap.txt
+  template: ./sitemap_template.xml
+  template_txt: ./sitemap_template.txt
+  rel: false
+  tags: true
+  categories: true
 algolia:
   applicationID: 'U7FYEZ9TMI'
   apiKey: '0fdf82fa09ea60ae5170842f954e8834'
