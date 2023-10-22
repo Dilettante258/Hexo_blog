@@ -17,6 +17,6 @@ ModuleNotFoundError: No module named 'notebook.notebookapp'
 
 Powershell Prompt中输入指令
 
-```
+```bash
 pip install --upgrade --force-reinstall notebook
 ```
