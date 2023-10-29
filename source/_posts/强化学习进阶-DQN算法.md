@@ -53,7 +53,7 @@ Q-learning 的更新规则是使$Q(s,a)$和TD 目标$r+\gamma\max_{a^{\prime}\in
 $$
 \omega^*=\arg\min_\omega\frac{1}{2N}\sum_{i=1}^N\left[Q_\omega\left(s_i,a_i\right)-\left(r_i+\gamma\max_{a'}Q_\omega\left(s'_i,a'\right)\right)\right]^2
 $$
-损失函数是要最小化<span style="background:yellow">predicted Q value</span>和<span style="background:yellow">target Q value</span>之间的error。$Q(s,a)$ 是predicted Q value，它就是神经网络的输出，表示的是状态为s，动作为a的时候神经网络的预测值。$r+\gamma\max_{a^{\prime}\in\mathcal{A}}Q(s^{\prime},a^{\prime})$ 是target Q value，它是指当选择动作a时**实际观测到的值**。当agent选择一个动作，它会得到一个reward，然后我们可以它存下来，我们同样可以把every action after that的discounted reward存下来。它们两的和就是target Q value，是给一个动作实际获得的所有reward。
+损失函数是要最小化<span style="background:yellow">predicted Q value</span>和<span style="background:yellow">target Q value</span>之间的error。$Q(s,a)$ 是predicted Q value，它就是神经网络的输出，表示的是状态为s，动作为a的时候神经网络的预测值。$r+\gamma\max_{a^{\prime}\in\mathcal{A}}Q(s^{\prime},a^{\prime})$ 是target Q value，它是指当选择动作a时**实际观测到的值**。当agent选择一个动作，它会得到一个reward，与折扣后的上一次的Q值相加，它们两的和就是target Q value，是一个动作实际获得的所有reward。
 
 可以用predicted Q value去做回归问题，然后用和普通神经网络里一样的反向传播去训练损失函数，然后根据损失函数去训练神经网络使得predicted Q value尽量接近target Q value。[^深度强化学习DQN]
 
