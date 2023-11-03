@@ -19,19 +19,30 @@ conda activate gym019
 
 ### Opencv-python
 
-首先安装opencv，不然其他包对这个包有依赖，安装了依然是需要重新安装老版本的。
+首先安装`opencv`，不然其他包对这个包有依赖，安装了依然是需要重新安装老版本的。
 
 ```bash
 pip3 install opencv-python==4.3.0.36
 ```
 
-不然在调用matplotlib画图时会报错，如下图所示。
+不想安装老版本的opencv-python那就需要安装 `opencv-python-headless`
+
+```bash
+pip install opencv-python-headless
+```
+
+不然在调用matplotlib画图时会报错，如下所示。
 
 ```python
-qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "/home/xxxxx/anaconda3/envs/xxxxx/lib/python3.7/site-packages/cv2/qt/plugins" even though it was found.
+QObject::moveToThread: Current thread (0x80d3f00) is not the object's thread (0x8063280).
+Cannot move to target thread (0x80d3f00)
+
+qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "/home/dilettante/anaconda3/envs/Pytorch/lib/python3.10/site-packages/cv2/qt/plugins" even though it was found.
 This application failed to start because no Qt platform plugin could be initialized. Reinstalling the application may fix this problem.
 
-Available platform plugins are: xcb, eglfs, linuxfb, minimal, minimalegl, offscreen, vnc, webgl.
+Available platform plugins are: xcb, eglfs, minimal, minimalegl, offscreen, vnc, webgl.
+
+已放弃 (核心已转储)
 ```
 
 参考：[Uuntu20.04出现“qt.qpa.plugin: Could not load the Qt platform plugin “xcb“ in...已放弃 (核心已转储)”问题解决记录](https://blog.csdn.net/qq_49641239/article/details/116975588)
@@ -42,7 +53,7 @@ Available platform plugins are: xcb, eglfs, linuxfb, minimal, minimalegl, offscr
 
 ![img](https://img-blog.csdnimg.cn/f66565116d6948f4a6b6f8584c2b33f4.png)
 
-随后安装一系列库。
+随后安装一系列强化学习所需要的一系列库。
 
 ### PyTorch
 
@@ -58,7 +69,7 @@ conda install pytorch torchvision torchaudio cpuonly -c pytorch
 
 需要安装0.19.0版本的以适配一些如`env.seed()`等函数。下载链接：[openai / gym](https://github.com/openai/gym/releases/tag/0.19.0)
 
-下载并解压在一个合适的位置。
+下载并解压在一个合适的位置，请注意这些文件后面不能删掉。
 
 先安装基础版本的试一下。
 
@@ -67,9 +78,15 @@ cd gym	# 到你解压的文件目录下 / 直接资源管理器中右键“在�
 pip install -e .
 ```
 
-期间也许需要安装一些GCC编译工具，但是为提前安装好了。
+期间也许需要安装一些GCC编译工具，有些也可能提前安装好了。
 
 ```bash
+sudo apt-get install build-essential libgl1-mesa-dev libglew-dev libsdl2-dev libsdl2-image-dev libglm-dev libfreetype6-dev libglfw3-dev libglfw3 patchelf 
+```
+
+```bash
+pip install setuptools==63.2.0
+pip install cython==0.29
 pip install swig
 ```
 
@@ -109,9 +126,20 @@ pip install -e .[all]
 
 此部分参考：[如何在linux中安装gym[all]](https://blog.csdn.net/qq_37921030/article/details/121305417)
 
+如果安装不成功，则先单独安装mujoco-py，这里安装1.50版本的，先选定一个合适的文件夹：
+
+```bash
+wget https://github.com/openai/mujoco-py/archive/refs/tags/1.50.1.0.zip
+unzip 1.50.1.0.zip
+cd mujoco-py-1.50.1.0
+pip install -r requirements.txt
+pip install -r requirements.dev.txt
+pip3 install -e .
+```
+
 ### 其他依赖
 
-安装`matplotlib`
+安装`matplotlib`等库……
 
 ```bash
 conda install matplotlib
@@ -119,7 +147,7 @@ conda install matplotlib
 
 还有其他的需要的，自行安装。
 
-![image-20231018190455415](https://img-blog.csdnimg.cn/2e769f32154341beb5a5367df5be1b78.png))
+![image-20231018190455415](https://img-blog.csdnimg.cn/2e769f32154341beb5a5367df5be1b78.png)
 
 测试安装效果
 
