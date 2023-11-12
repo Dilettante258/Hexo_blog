@@ -5,8 +5,6 @@ date: 2023-11-12 12:30:23
 mathjax: true
 ---
 
-
-
 目前主流的offline RL的方法都是model free的，这类方法通常需要将policy限制到data覆盖的集合范围里（support），不能泛化到没见过的状态上。作者提出Model-based Offline Policy Optimization (MOPO)算法,用model based的方法来做offline RL，同时通过给reward添加惩罚项（soft reward penalty）来描述环境转移的不确定性（applying them with rewards artificially penalized by the uncertainty of the dynamics.）这种方式相当于在泛化性和风险之间做tradeoff。作者的意思是，这种方式允许算法为了更好的泛化性而承担一定风险（policy is allowed to take a few risky actions and then return to the confident area near the behavioral distribution without being terminated）。具体做法就是，先根据data去学一堆状态转移函数，这个函数是一个用神经网络表示的关于状态和reward的高斯分布
 
 MOPO: Model-based Offline Policy Optimization
