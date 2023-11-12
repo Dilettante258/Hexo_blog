@@ -2,7 +2,12 @@
 title: 离线强化学习-CQL
 categories: 强化学习 离线强化学习
 date: 2023-11-9 15:30:23
+mathjax: true
 ---
+
+arxiv: [Conservative Q-Learning for Offline Reinforcement Learning](https://arxiv.org/abs/2006.04779)
+
+作者的代码:[CQL-Github](https://github.com/aviralkumar2907/CQL)
 
 > Effectively leveraging large, previously collected datasets in reinforcement learn- ing (RL) is a key challenge for large-scale real-world applications. Offline RL algorithms promise to learn effective policies from previously-collected, static datasets without further interaction. However, in practice, offline RL presents a major challenge, and standard off-policy RL methods can fail due to overestimation of values induced by the distributional shift between the dataset and the learned policy, especially when training on complex and multi-modal data distributions.
 
@@ -80,6 +85,11 @@ CQL算法使策略在所学习的**Q函数的期望值低于其 真值(真实Q�
 
 ## Conservative Off-Policy Evaluation
 
+普通 DQN 类方法通过优化 stander Bellman error objective 来更新 Q QQ 价值
+$$
+\hat{Q}^{k+1}\leftarrow\operatorname{argmin}_Q\mathbb{E}_{(s,a)\sim\mathcal{D}}\left[\left(Q(s,a)-\hat{\mathcal{B}}^\pi\hat{Q}^k(s,a)\right)^2\right]
+$$
+
 > Because we are interested in preventing overestimation of the policy value, we learn a conservative, lower-bound Q-function by additionally minimizing Q-values alongside a standard Bellman error objective. Our choice of penalty is to minimize the expected Q-value under a particular distribution of state-action pairs, µ(s, a).
 
 由于我们想要预防高估价值函数，我们可以通过在保留 标准的 Bellman error objective 的同时，额外最小化Q值来学习保守的Q函数下界。我们选择的惩罚项是希望在某个特定分布µ(s, a)上的期望Q值最小。
@@ -89,12 +99,23 @@ CQL算法使策略在所学习的**Q函数的期望值低于其 真值(真实Q�
 $$
 \hat{Q}^{k+1}\leftarrow\arg\min_Q\left.\alpha\right.\mathbb{E}_{\mathbf{s}\sim\mathcal{D},\mathbf{a}\sim\mu(\mathbf{a}|\mathbf{s})}\left[Q(\mathbf{s},\mathbf{a})\right]+\frac12\mathbb{E}_{\mathbf{s},\mathbf{a}\sim\mathcal{D}}\left[\left(Q(\mathbf{s},\mathbf{a})-\hat{\mathcal{B}}^{\pi}\hat{Q}^k(\mathbf{s},\mathbf{a})\right)^2\right]
 $$
+
+$\alpha$是平衡因子，用来控制两个优化目标的比重。
+
+论文中Theorem 3.1 证明了对任意 $\mu(a|s)$,当 $\alpha$ 足够大时，迭代的收敛结果$\hat{Q}_{\pi}:=\lim_{k\to\infty}\hat{Q}^k$ 会对每一个状态动作对 $(s,a)$ 都形成真实值的下界，即 $\hat{Q}_{\pi}\leq Q^{\pi}(s,a)$。[这里是**point-wise**的下界]
+
 > we can substantially tighten this bound if we are only interested in estimating $V_\pi (s)$. If we only require that the expected value of the $Q^\pi$ under π(a|s) lower-bound $V\pi$, we can improve the bound by introducing an additional Q-value maximization term under the data distribution, $\pi_\beta(a|s)$, resulting in the iterative update (changes in red):
 
-如果我们只对估计只要求$\hat{Q}_\pi$关于策略$\pi(a|s)$的期望$\hat{V}^\pi(s)$感兴趣，我们可以大大收紧这个界限（放松对Q的约束）。对于符合用于生成数据集 $\mathcal{D}$ 的行为策略 π  的数据点，我们可以认为对这些点的估值较为准确，在这些点上不必限制让值很小，我们可以通过在数据分布下引入额外的Q值最大化项$\pi_\beta(a|s)$来改进(最小化负值=最大化原值)，从而得出（红色标记变化）：<a name="Equation 2">Equation 2</a>
+为了防止过于保守，如果我们只对估计只要求$\hat{Q}_\pi$关于策略$\pi(a|s)$的期望$\hat{V}^\pi(s)$感兴趣，我们可以大大收紧这个界（放松对Q的约束，也就是**期望意义上的下界**，**允许某些点不是下界**）。对于符合用于生成数据集 $\mathcal{D}$ 的行为策略 π  的数据点，我们可以认为对这些点的估值较为准确，在这些点上不必限制让值很小，我们可以通过引入**对在数据集分布$\pi_\beta(a|s)$上的Q值进行最大化**的项来改进(最小化负值=最大化原值)，从而得出（红色标记变化）：<a name="Equation 2">Equation 2</a>
 $$
 \begin{aligned}\hat{Q}^{k+1}\leftarrow\arg\min_Q\alpha\cdot\left(\mathbb{E}_{\mathbf{s}\sim\mathcal{D},\mathbf{a}\sim\mu(\mathbf{a}|\mathbf{s})}\left[Q(\mathbf{s},\mathbf{a})\right]-{\color{Red} \mathbb{E}_{\mathbf{s}\sim\mathcal{D},\mathbf{a}\sim\hat{\pi}_{\beta}(\mathbf{a}|\mathbf{s})}\left[Q(\mathbf{s},\mathbf{a})\right]} \right)\\+\frac{1}{2}\mathbb{E}_{\mathbf{s},\mathbf{a},\mathbf{s}^{\prime}\sim\mathcal{D}}\left[\left(Q(\mathbf{s},\mathbf{a})-\hat{\mathcal{B}}^\pi\hat{Q}^k(\mathbf{s},\mathbf{a})\right)^2\right]\end{aligned}
 $$
+
+其中$\hat{\pi}_\beta$ 是利用数据集 $D$ 得到的对真实行为策略 $\pi_\beta$ 的估计，因为我们无法获知真实的行为策略，只能通过数据集中已有的数据近似得到。
+
+所以那些在行为策略当中的动作**就有可能被高估**
+
+论文中Theorem 3.2 证明了当 $\mu(a|s)=\pi(a|s)$ 时，上式迭代收敛得到的$Q$ 函数虽然不是在每一点上都小于真实值，但其期望是小于真实值的，即 $\mathbb{E}_{\pi(a|s)}\left[\hat{Q}^{\pi}(s,a)\right]=\hat{V}^{\pi}(s)\leq V^{\pi}(s)$。[这里**不是point-wise**的下界]
 
 > In summary, we showed that the basic CQL evaluation in <a href="#Equation 1">Equation 1</a> learns a Q-function that lower-bounds the true Q-function Qπ , and the evaluation in <a href="#Equation 2">Equation 2</a>  provides a tighter lower bound on the expected Q-value of the policy π. 
 
@@ -111,7 +132,9 @@ $$
 \pi\approx\max_{\mu}\mathbb{E}_{s\sim\mathcal{D},a\sim\mu(a|s)}[Q(s,a)]
 $$
 
-We can formally capture such online algorithms by defining a family of optimization problems over µ(a|s), presented below, with modifications from <a href="#Equation 2">Equation 2</a> marked in red. An instance of this family is denoted by CQL(R) and is characterized by a particular choice of regularizer R(µ):
+
+
+> We can formally capture such online algorithms by defining a family of optimization problems over µ(a|s), presented below, with modifications from <a href="#Equation 2">Equation 2</a> marked in red. An instance of this family is denoted by CQL(R) and is characterized by a particular choice of regularizer R(µ):
 
 我们可以通过在µ(a|s)上定义一族优化问题来形式化地捕捉这种在线算法，如下所示，下面通过红色标记出来对<a href="#Equation 2">Equation 2</a>进行的修改。这个被称为CQL(R)，为了防止过拟合，再加上正则化项 ${\mathcal{R}(\mu)}$：<a name="Equation 3">Equation 3</a>
 $$
@@ -128,9 +151,13 @@ $$
 $$
 \min_Q\left.\alpha\mathbb{E}_{\mathbf{s}\sim\mathcal{D}}\left[\log\sum_{\mathbf{a}}\exp(Q(\mathbf{s},\mathbf{a}))-\mathbb{E}_{\mathbf{a}\sim\hat{\pi}_\beta(\mathbf{a}|\mathbf{s})}\left[Q(\mathbf{s},\mathbf{a})\right]\right]+\frac{1}{2}\mathbb{E}_{\mathbf{s},\mathbf{a},\mathbf{s}^{\prime}\sim\mathcal{D}}\left[\left(Q-\hat{\mathcal{B}}^{\pi_k}\hat{Q}^k\right)^2\right]\right.
 $$
+可以注意到，简化后式中已经不含有 µ，为计算提供了很大方便。
+
 详细推导过程请参见 [动手做强化学习](https://hrl.boyuai.com/chapter/3/离线强化学习/#186-扩展阅读)
 
+论文中 Theorem 3.3 证明了：若策略梯度更新的非常缓慢(足够小的速度更新),不考虑采样误差，即$\hat{B}^\pi=B^\pi$,那么选取$\mu=\hat{\pi}^k$,可以保证在迭代更新中的每一步时，都有$\hat{V}^{k+1}(s)\leq V^{k+1}(s)$
 
+论文中 Theorem 3.4 证明了：CQL是gap-expanding的，即对于任意一次迭代，in-distribution动作分布与OOD动作分布产生的Q函数（$ \hat{Q}^k$）的差将比在真实Q函数上产生的差更大，公式表达是$\mathbb{E}_{\pi_\beta(\mathbf{a}|\mathbf{s})}[\hat{Q}^k(\mathbf{s},\mathbf{a})]-\mathbb{E}_{\mu_k(\mathbf{a}|\mathbf{s})}[\hat{Q}^k(\mathbf{s},\mathbf{a})]>\mathbb{E}_{\pi_\beta(\mathbf{a}|\mathbf{s})}[Q^k(\mathbf{s},\mathbf{a})]-\mathbb{E}_{\mu_k(\mathbf{a}|\mathbf{s})}[Q^k(\mathbf{s},\mathbf{a})]$。本文的方法存在潜在的优势是能够在真实Q函数上缩紧 训练的策略  与行为策略 的差距。换句话表示就是，**学习到的策略**和**行为策略**之间的**正则化Q函数期望估值差异**，都**比原本的Q函数大**。这样的话在面对**函数近似**以及**采样误差**的时候**可以更稳定**。直观来说就是**分布内动作**受到**分布外动作**的**影响更小**。
 
 > Second, if ρ(a|s) is chosen to be the previous policy $\pi^{k−1}$, the first term in <a href="#Equation 4">Equation 4</a> is replaced by an exponential weighted average of Q-values of actions from the chosen πˆ k−1 (a|s). Empirically, we 4 find that this variant can be more stable with high-dimensional action spaces (e.g., Table 2) where it is challenging to estimate $\log\sum_\mathbf{a}{\exp}$ via sampling due to high variance. In Appendix A, we discuss an additional variant of CQL, drawing connections to distributionally robust optimization. We will discuss a practical instantiation of a CQL deep RL algorithm in Section 4. CQL can be instantiated as either a Q-learning algorithm (with $B^*$ instead of $B^\pi$ in Equations 3, 4) or as an actor-critic algorithm.
 
@@ -256,8 +283,9 @@ Reference：
 
 1. [Conservative Q-Learning(CQL)保守Q学习(一)-CQL1(下界Q值估计)](https://blog.csdn.net/lvoutongyi/article/details/129754201
     )
-2. [论文速览【Offline RL】—— 【CQL】Conservative Q-Learning for Offline Reinforcement Learning](https://blog.csdn.net/wxc971231/article/details/131588429)
-3. [CQL: Conservative Q-Learning for Offline Reinforcement Learning](https://zhuanlan.zhihu.com/p/633549377)
-4. [强化学习 | CQL：Conservative Q-Learning for Offline Reinforcement Learning](https://zhuanlan.zhihu.com/p/517608562)
-5. [Conservative Q Learning(保守强化学习)傻瓜级讲解和落地教程](https://zhuanlan.zhihu.com/p/603691759)
-6. [Offline RL(3): CQL](https://zhuanlan.zhihu.com/p/349771471)
+2. [Conservative Q-Learning(CQL)保守Q学习(二)-CQL2(下界V值估计),CQL(R)与CQL(H)](https://blog.csdn.net/lvoutongyi/article/details/129780619)（这两篇理论证明过程很详细，缺少对后几个Theorem的详细解释）
+3. [论文速览【Offline RL】—— 【CQL】Conservative Q-Learning for Offline Reinforcement Learning](https://blog.csdn.net/wxc971231/article/details/131588429)（很精简）
+4. [CQL: Conservative Q-Learning for Offline Reinforcement Learning](https://zhuanlan.zhihu.com/p/633549377) （解释很均衡）
+5. [强化学习 | CQL：Conservative Q-Learning for Offline Reinforcement Learning](https://zhuanlan.zhihu.com/p/517608562)（这篇对几个Theorem解释较好）
+6. [Conservative Q Learning(保守强化学习)傻瓜级讲解和落地教程](https://zhuanlan.zhihu.com/p/603691759)
+7. [【论文笔记】Conservative Q-Learning](https://zhuanlan.zhihu.com/p/429378041)
