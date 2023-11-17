@@ -81,7 +81,8 @@ pip install -e .
 期间也许需要安装一些GCC编译工具，有些也可能提前安装好了。
 
 ```bash
-sudo apt-get install build-essential libgl1-mesa-dev libglew-dev libsdl2-dev libsdl2-image-dev libglm-dev libfreetype6-dev libglfw3-dev libglfw3 patchelf 
+sudo apt update
+sudo apt-get install build-essential libgl1-mesa-dev libglew-dev libsdl2-dev libsdl2-image-dev libglm-dev libfreetype6-dev libglfw3-dev libglfw3 patchelf libosmesa6-dev
 ```
 
 ```bash

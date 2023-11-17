@@ -26,13 +26,13 @@ Remount failed: Operation not permitted
 
 或者用图形化界面，打开“磁盘”（找不到直接可以搜索）：
 
-![image-20231110163804566](images/image-20231110163804566.png)
+![image-20231110163804566](/images/image-20231110163804566.png)
 
 注意到，上面提示`Windows is hibernated, refused to mount. Remount failed: Operation not permitted`。这是因为Windows可能没有完全关闭，应该进入Windows系统下，关闭快速启动。具体方法请自行百度。
 
 但是在没有开启“快速启动”的方法下，可能仍然会遇到这种情况，比如我。
 
-![image-20231110132905370](images/image-20231110132905370.png)
+![image-20231110132905370](/images/image-20231110132905370.png)
 
 看到红框标出的位置，一个是设备，一个是挂载点，输入代码
 

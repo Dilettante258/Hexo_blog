@@ -11,27 +11,31 @@ arxiv: [Conservative Q-Learning for Offline Reinforcement Learning](https://arxi
 
 > Effectively leveraging large, previously collected datasets in reinforcement learn- ing (RL) is a key challenge for large-scale real-world applications. Offline RL algorithms promise to learn effective policies from previously-collected, static datasets without further interaction. However, in practice, offline RL presents a major challenge, and standard off-policy RL methods can fail due to overestimation of values induced by the distributional shift between the dataset and the learned policy, especially when training on complex and multi-modal data distributions.
 
-在强化学习（RL）中有效利用以前收集的大型数据集是大规模现实世界应用程序面临的关键挑战。离线RL算法承诺从以前收集的静态数据集中学习有效的策略，而无需进一步的交互。然而，在实践中，离线RL是一个主要的挑战，标准的非策略RL方法可能会因为数据集和学习策略之间的分布变化导致的值估计过高而失败，尤其是在对复杂和多模态数据分布进行训练时。
+如何在强化学习（RL）中有效利用以前收集的大型数据集是大规模在现实世界应用所面临的关键挑战。离线RL算法允许了从以前收集的静态数据集中学习有效的策略，而无需与环境交互。然而，在实践中，离线RL一个主要的挑战是：标准的off-policy RL算法可能会因为数据集和学习策略之间的 distributional shift 导致V值估计过高而失效，尤其是在对复杂和多模态数据分布进行训练时。
 
-> In this paper, we propose conservative Q-learning (CQL), which aims to address these limitations by learning a conservative Q-function such that the expected value of a policy under this Q-function lower-bounds its true value. 
+> In this paper, we propose conservative Q-learning (CQL), which aims to address these limitations by learning a conservative Q-function such that the expected value of a policy under this Q-function lower-bounds its true value.  ...... If we can instead learn a conservative estimate of the value function, which provides a lower bound on the true values, this overestimation problem could be addressed.
 
-Aviral Kumar等人提出了保守Q学习（CQL），其目的是通过学习保守Q函数来解决这些限制，使得在该Q函数下策略的期望值低于其真值。
+Aviral Kumar等人提出了保守Q学习（CQL），其目的是通过学习一个保守的Q函数来解决这些限制，使得在该Q函数下策略的期望值低于其真实值。 …… 如果我们能够学习值函数的保守估计，它反映了真实Q值的下界，那么这个高估问题就可以得到解决。
+
+
 
 > In practice, CQL augments the standard Bellman error objective with a simple Q-value regularizer which is straightforward to implement on top of existing deep Q-learning and actor-critic implementations. 
 
-在实践中，CQL用一个简单的Q值正则化项增强了Bellman error objective的性能，该正则化项在现有的deep Q-learning和Actor-Critic之上易于实现。（只需修改大概20行代码）
+在实践中，CQL用一个简单的Q值正则化项增强了Bellman error objective的性能，这个修改在现有的deep Q-learning和Actor-Critic算法基础之上都很易于实现。（只需修改大概20行代码）
 
 > Directly utilizing existing value-based off-policy RL algorithms in an offline setting generally results in poor performance, due to issues with bootstrapping from out-of-distribution actions and overfitting. If we can instead learn a conservative estimate of the value function, which provides a lower bound on the true values, this overestimation problem could be addressed.
 
-在离线强化学习环境中直接使用现有的基于值的 off-policy 算法通常会导致较差的性能，这是由于OOD的actions 评估（源于收集数据的策略和学习的策略之间的distributional shift。）和自举带来的过拟合问题。如果我们能够学习值函数的保守估计(真值下界)，那么这个高估问题就可以得到解决。
+在离线强化学习环境中直接使用现有的基于值的 off-policy 算法通常会导致较差的性能，这是由于OOD的actions 评估（源于收集数据的策略和学习的策略之间的distributional shift）和自举带来的过拟合问题。如果我们能够学习值函数的保守估计(真值下界)，那么这个高估问题就可以得到解决。
 
 > In fact, because policy evaluation and improvement typically only use the value of the policy, we can learn a less conservative lower bound Q-function, such that only the expected value of Q-function under the policy is lower-bounded, as opposed to a point-wise lower bound.
 
-事实上，由于策略评估和改进通常只使用策略的值，我们可以学习一个不太保守的Q函数下界，这样只有策略下Q函数的期望值是下界，而不是逐点下界。
+因为实际上策略评估和改进通常只使用策略的值，所以我们可以学习一个不太保守的Q函数下界，这样该策略下Q函数是期望意义上的下界，而不是逐点的下界（允许某些点不是下界）。
 
 > the key idea behind our method is to minimize values under an appropriately chosen distribution over state-action tuples, and then further tighten this bound by also incorporating a *maximization* term over the data distribution.
 
-我们的方法背后的关键思想是在状态-动作元组上适当选择的分布下最小化值，然后通过在数据分布上引入*最大化项来进一步收紧这一界限。
+我们的方法背后的关键思想是在适当的一些状态-动作组 (s,a) (数据集外的）上最小化值，然后再通过在引入*最大化项*（在数据集内的）来进一步收紧这一界限。
+
+
 
 # Preliminaries
 
@@ -74,10 +78,11 @@ $$
 $$
 Q^{k+1}(s,a)\leftarrow r(s,a)+\gamma E_{s^{\prime}\sim T,a^{\prime}\sim\pi}[Q^{k}(s^{\prime},a^{\prime})]
 $$
-但是显然的在Offline RL中存在这样的问题，上述公式中的==r(s,a)==在Offline中是无法获取的，Since无法与环境进行探索，策略 π 被由于价值最大化操作，价值估计很可能就会偏向于错误的高Q值的 out-of-distribution (OOD) 行为。
-
+但是显然的在Offline RL中存在这样的问题，上述公式中的 **r(s,a)** 在Offline中是无法获取的，Since无法与环境进行探索，策略 π 被由于价值最大化操作，价值估计很可能就会偏向于错误的高Q值的 out-of-distribution (OOD) 行为。
 
 # The Conservative Q-Learning (CQL) Framework
+
+离线强化学习面对的巨大挑战是如何减少外推误差。实验证明，外推误差主要会导致在远离数据集的点上Q函数的过高估计，甚至常常出现Q值向上发散的情况。因此，如果能用某种方法将算法中偏离数据集的点上的Q函数保持在很低的值，或许能消除部分外推误差的影响，这就是**保守 Q-learning**（conservative Q-learning，CQL）算法的基本思想。CQL 在普通的贝尔曼方程上引入一些额外的限制项，达到了这一目标。
 
 > develop a conservative Q-learning algorithm, such that the expected value of a policy under the learned **Q-function lower-bounds its true value(真实Q值函数下界)**. Lower-bounded Q-values prevent the over-estimation that is common in offline RL settings due to OOD actions and function approximation error.
 
@@ -85,7 +90,7 @@ CQL算法使策略在所学习的**Q函数的期望值低于其 真值(真实Q�
 
 ## Conservative Off-Policy Evaluation
 
-普通 DQN 类方法通过优化 stander Bellman error objective 来更新 Q QQ 价值
+普通 DQN 类方法通过优化 stander Bellman error objective 来更新  Q 价值
 $$
 \hat{Q}^{k+1}\leftarrow\operatorname{argmin}_Q\mathbb{E}_{(s,a)\sim\mathcal{D}}\left[\left(Q(s,a)-\hat{\mathcal{B}}^\pi\hat{Q}^k(s,a)\right)^2\right]
 $$
@@ -113,7 +118,7 @@ $$
 
 其中$\hat{\pi}_\beta$ 是利用数据集 $D$ 得到的对真实行为策略 $\pi_\beta$ 的估计，因为我们无法获知真实的行为策略，只能通过数据集中已有的数据近似得到。
 
-所以那些在行为策略当中的动作**就有可能被高估**
+所以那些在行为策略当中的动作**就有可能被高估**。
 
 论文中Theorem 3.2 证明了当 $\mu(a|s)=\pi(a|s)$ 时，上式迭代收敛得到的$Q$ 函数虽然不是在每一点上都小于真实值，但其期望是小于真实值的，即 $\mathbb{E}_{\pi(a|s)}\left[\hat{Q}^{\pi}(s,a)\right]=\hat{V}^{\pi}(s)\leq V^{\pi}(s)$。[这里**不是point-wise**的下界]
 
@@ -186,12 +191,18 @@ $$
 
 ## Pseudocode
 
-![img](https://img-blog.csdnimg.cn/img_convert/0e3840978ea79f701418226b372dde41.png)
+![](https://img-blog.csdnimg.cn/img_convert/0e3840978ea79f701418226b372dde41.png)
 
 如果是Q-learning模式：μ 可以作为最终的策略
 如果是Actor-Critic模式：需要使用SAC的训练方式额外训练actor
 
 
+
+
+
+
+
+![image-20231113111241767](/images/image-20231113111241767.png)
 
 [动手做强化学习](https://hrl.boyuai.com/chapter/3/离线强化学习#184-cql-代码实践)中，CQL代码实践，相较于SAC代码实践主要多的是这一部分：
 
