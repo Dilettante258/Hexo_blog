@@ -145,11 +145,11 @@ mathjax: true
 
 那么我们如何为回报建立一种特定的分类？我们采用基于模型的方法，意味着我们从学习动态的不确定性量度(UQ)开始，然后将该不确定性量度转化为对回报的不确定性量度。
 
-因此，我们不知道如何以一种有原则的方式对所学的动态过程进行显著性检验。这是一个非常困难的问题，所以任何使用非线性模型进行的答案修改都很困难，但我们假设我们有一个构建块、模块或某种预言机，可以对学习到的动态过程进行识别，然后将其转化为策略回报的一定量化。
+因此，我们不知道如何以一种有原则的方式对所学的动力学模型进行显著性检验。这是一个非常困难的问题，所以任何使用非线性模型进行的答案修改都很困难，但我们假设我们有一个构建块、模块或某种预言机，可以对学习到的动力学模型进行识别，然后将其转化为策略回报的一定量化。
 
-那么我们该如何做到呢？我们在批量数据上学习一个动态模型，*暂时*假设该数据是确定性的。我也将把它扩展到随机情况。因为学习动态过程是令人惊讶的，所以我们假设令人惊讶的学习算法也具有校准保证。
+那么我们该如何做到呢？我们在批量数据上学习一个动态模型，*暂时*假设该数据是确定性的。我也将把它扩展到随机情况。因为学习动力学模型是启发式，所以我们假设启发式的学习算法也具有校准保证。
 
-校准保证意味着假设存在一个误差估计器。我们可以得到一个对于动态模型的误差估计器u(:,:)，如果满足 $||\hat{T}(s,a)-T^{\star}(s,a)||\leq u(s,a)$ 则认为u是一个可接受的误差估计器。即它确实是真实误差的一个上界。（证明请见其他博客和论文）所以这是我们对模型校准性的假设。
+校准保证意味着假设存在一个误差估计器。我们可以得到一个对于动态模型的误差估计器u(:,:)，如果满足 $||\hat{T}(s,a)-T^{\star}(s,a)||\leq u(s,a)$ 则认为u是一个可接受的误差估计器。即它提供了真实误差的一个上界。（证明请见其他博客和论文）所以这是我们对模型校准性的假设。
 
 然后我们还假设值函数$V^{\pi,T^{\star}}$是省略的。我将在下一张幻灯片上详细展开，但基本上，您必须对您的值函数做出一些假设。因为您知道您必须对奖励函数做出一些假设，对吧？如果奖励可以是正无穷或负无穷，那么您无法在离线状态下做任何事情，因为您尚未见过的某个其他状态的奖励可能是正无穷或负无穷。
 
@@ -165,17 +165,21 @@ mathjax: true
 
 >We use the ISO and configuration for the dynamics and turn it into a simplification for the right term. You can also have a unified approach for stochastic dynamics.
 >
->Here, what we do is that this page is a little bit abstract, but bear with me for a moment. We assume that the value function belongs to some C times a scalar times the family of functions F. We assume some error estimator in a slightly different form. We assume that, because this is um, stochastic dynamics, then T of S, A, and K-star of S, A are random variables or distributions. So then we measure the quality of the dynamics by estimating the distance between K-star of S, A and here the distance is the integral probability metric (IPM) between the two distributions with respect to F. We want the average meter to be an upper bound of that.
+>Here, what we do is that this page is a little bit abstract, but bear with me for a moment. We assume that the value function belongs to some C times a scalar times the family of functions F. We assume some error estimator in a slightly different form. We assume that, because this is um, stochastic dynamics, then T of S, A, and T-star of S, A are random variables or distributions. So then we measure the quality of the dynamics by estimating the distance between T-star of S, A and here the distance is the integral probability metric (IPM) between the two distributions with respect to F. We want the average meter to be an upper bound of that.
 >
 >To remind you, the IPM is a way to measure the distance between two distributions via the test function F belonging to the family F. You look at the expectation of F under the two distributions, take the differences, and then take the sup over all the test functions. This allows us to unify a few different cases. For example, if you assume V-pi-T-star is L-Lipschitz, then the distance is the Wasserstein distance. If the dynamics are deterministic, then the distance is just the L2 distance. If V-pi-T-star is bounded, then the distance is the total variation distance. If T-star is some kind of kernel space, then df could be the maximum mean discrepancy distance.
 
-![3d225963ef24d7f2abb02c84b326e092](/images/3d225963ef24d7f2abb02c84b326e092.png)
+![3d225963ef24d7f2abb02c84b326e092](images/3d225963ef24d7f2abb02c84b326e092.png)
 
 ==暂时还没看懂==
 
-我们使用ISO和动态过程配置，并将其转化为对右侧项的简化。您还可以对随机动态过程采用统一的方法。
+上图中 w.r.t 指 with respect to，关于。
 
-在这里，我们做的是有点抽象的，但请稍等片刻。我们假设值函数属于 某个c(标量)×函数族F。我们以稍微不同的形式假设了一些误差估计器。我们假设，因为这是随机动力学，所以$T(s,a)$和$T^{\star}(s,a)$是随机变量或分布。因此，我们通过估计$T^{\star}(s,a)$与T的积分概率度量(IPM)之间的距离来衡量动态过程的质量。我们希望平均度量是其上界。
+我们使用ISO和动力学模型配置，并将其转化为对右侧项的简化。您还可以对随机动力学模型采用统一的方法。
+
+在这里，我们做的是有点抽象的，但请稍等片刻。我们假设值函数 V 属于 某个c(标量) × 函数族 $\mathcal{F}$ （设 $\mathcal{F}$ 为 从 $\mathcal{S}$ 映射到 $\mathbb{R}$ 的一个**函数集合**，其中包含了 $V_{M}^{\pi}$ ）。我们以稍微不同的形式假设了一些误差估计器。我们假设，因为这是随机的动力学模型，所以$T(s,a)$和$T^{\star}(s,a)$是随机变量或分布。因此，我们通过估计$T(s,a)$和$T^{\star}(s,a)$的*距离*，也就是 **积分概率度量(IPM)** 来衡量动力学模型的质量。我们希望平均量是其上界。
+
+So then we measure the quality of the dynamics by estimating the distance between T-star of S, A and here the distance is the integral probability metric (IPM) between the two distributions with respect to F. 
 
 应用两种距离公式进行对比分析：
 
