@@ -1,30 +1,36 @@
 ---
 title: 离线强化学习-MOPO Model-based Offline Policy Optimization
 categories: 强化学习 离线强化学习
-date: 2023-11-12 12:30:23
+date: 2023-11-17 18:30:23
 mathjax: true
 ---
 
+Arxiv: [MOPO: Model-based Offline Policy Optimization](https://arxiv.org/abs/2005.13239)
+
+PDF: [arxiv.org](https://arxiv.org/pdf/2005.13239.pdf)
+
+Code: [paperswithcode](https://paperswithcode.com/paper/mopo-model-based-offline-policy-optimization)
+
 # Abstract
 
-离线强化学习指的是完全从一批先前收集的数据集中学习策略的问题。尽管model-free 离线RL算法取得了显著进展，但最成功的现有方法将策略限制在数据支持范围内，无法推广到新状态。
-MOPO作者观察到，与model-free 算法相比，现有的model-based的RL算法本身已经在离线环境中产生了显著的优势，尽管它并不是为这种设置而设计的。然而，尽管许多基于标准模型的RL算法已经估计了模型的不确定性，但它们本身并没有提供明确的机制来避免离线设置中的分布偏移问题。因此，作者建议修改现有的model-based的RL算法，以通过将 model-free 离线RL 转换为受惩罚的MDP框架来解决这些问题。
-作者从理论上表明，通过使用这种算法，可以使真实MDP下的 奖励的下界 最大化。基于上述理论结果，作者提出了一种新的model-based的离线RL算法，该算法将Lipschitz正则化模型的方差作为对奖励函数的惩罚。实验表明，该算法的性能在离线RL benchmark 测试和两项具有挑战性的需要对分布外泛化的连续控制任务中优于现有的model-based 和 model-free RL算法。
+离线强化学习指的是完全从一批先前收集的数据集中学习策略的问题。尽管model-free 离线RL算法取得了显著进展，但最成功的现有方法<u>将策略限制在数据支持范围内，无法推广到新状态</u>。
+MOPO作者观察到，**与model-free 算法相比，现有的model-based的RL算法本身已经在离线环境中有显著的优势，尽管它并不是为这种设置而设计的。**然而，尽管许多基于标准模型的RL算法已经估计了模型的不确定性，但它们本身并没有提供明确的机制来避免离线设置中的分布偏移问题。因此，作者建议修改现有的model-based的RL算法，以通过将 model-free 离线RL 转换为受惩罚的MDP框架来解决这些问题。
+作者从理论上表明，通过使用这种算法，可以使真实MDP下的 奖励的下界 最大化。基于上述理论结果，作者提出了一种新的model-based的离线RL算法，该算法将**动力学模型的不确定性**作为对奖励函数的惩罚。实验表明，该算法的性能在<font color=MediumSeaGreen>离线RL benchmark 测试</font>和<font color=DodgerBlue>两项 具有挑战性的 需要对分布外泛化的 连续控制任务</font>中优于现有的model-based 和 model-free RL算法。
 
 # Introduction
 
 目前主流的offline RL的方法都是model-free的，这类方法通常需要将策略 π 限制到数据集覆盖的集合范围里（support），不能泛化到没见过的状态上。作者提出MOPO算法，MOPO是一种model-based offline RL方法，简单来说就是把MBPO用在了offline设定下，根据offline的需要做了一些小修改。
 
-一方面，这种model-based方法生成 D_model 数据集，能够提升sample efficiency；另一方面，MOPO能够利用model让策略以一定概率选择行为分布之外的action。但是离行为分布越远，不确定性会越大，所以MOPO通过不确定性估计来量化偏离行为分布的风险，实现其和探索多样state所得收益之间的trade-off。具体来说，就是在reward函数后面加了一个不确定性惩罚项，通过ensemble的方法（即N个dynamics模型的最大标准差）量化这种不确定性，不确定性越大则reward越小。也就是说不是直接惩罚OOD状态和动作，而是惩罚具有高不确定性的 (s,a) 。具体做法就是，先根据data去学一堆状态转移函数，这个函数是一个用神经网络表示的关于状态和reward的高斯分布。
+一方面，这种model-based方法对环境进行建模，拟合环境的动力学模型（dynamics model），采样效率较高；另一方面，MOPO能够利用model让策略以一定概率选择行为分布之外的action。但是离行为分布越远，不确定性会越大，所以MOPO通过不确定性估计来量化偏离行为分布的风险，实现其和探索多样state所得收益之间的trade-off。具体来说，就是在reward函数后面加了一个不确定性惩罚项，通过ensemble的方法（即N个dynamics模型的最大标准差）量化这种不确定性，不确定性越大则reward越小。也就是说不是直接惩罚OOD状态和动作，而是惩罚具有高不确定性的 (s,a) 。具体做法就是，先根据data去学一堆状态转移函数，这个函数是一个用神经网络表示的关于状态和reward的高斯分布。
 
 > While these methods achieve reasonable performances in some settings, their learning is limited to behaviors within the data manifold. Specifically, these methods estimate error with respect to out-of-distribution actions, but only consider states that lie within the offline dataset and do not consider those that are out-of-distribution. We argue that it is important for an offline RL algorithm to be equipped with the ability to leave the data support to learn a better policy for two reasons: (1) the provided batch dataset is usually sub-optimal in terms of both the states and actions covered by the dataset, and (2) the target task can be different from the tasks performed in the batch data for various reasons, e.g., because data is not available or hard to collect for the target task. Hence, the central question that this work is trying to answer is: can we develop an offline RL algorithm that generalizes beyond the state and action support of the offline data?
 
 Model-free 的算法在一些环境下可以达到合理的性能，但它们的学习仅限于数据集内的行为。具体而言，这些方法会针对超出分布的动作估计误差，但只考虑那些在离线数据集中的状态，并不考虑那些超出分布范围的状态。
 
-我们认为，离线RL算法具备离开数据支持范围的能力对于两个原因非常重要：
+作者认为，离线RL算法具备离开数据支持范围的能力对于两个原因非常重要：
 
 1. 提供的数据集通常在覆盖的状态和动作方面是次优的；
-2. 目标任务可能由于各种原因与数据集中执行的任务不同，例如，由于目标任务的数据不可用或难以收集。
+2. 目标任务可能由于各种原因与数据集中执行的任务不同。例如，由于目标任务的数据不可用或难以收集。
 
 因此，本文试图回答的核心问题是：<u>我们能否开发一种离线RL算法，可以在超出离据集的状态和动作支持范围之外进行泛化？</u>
 
@@ -44,15 +50,15 @@ Model-free 的算法在一些环境下可以达到合理的性能，但它们的
 
 > Despite these promising preliminary results, we expect significant headroom for improvement. In particular, because offline model-based algorithms cannot improve the dynamics model using additional experience, we expect that such algorithms require careful use of the model in regions outside of the data support. Quantifying the risk imposed by imperfect dynamics and appropriately trading off that risk with the return is a key ingredient towards building a strong offline model-based RL algorithm. To do so, we modify MBPO to incorporate a reward penalty based on an estimate of the model error. Crucially, this estimate is model-dependent, and does not necessarily penalize all out-of-distribution states and actions equally, but rather prescribes penalties based on the estimated magnitude of model error. Further, this estimation is done both on states and actions, allowing generalization to both, in contrast to model-free approaches that only reason about uncertainty with respect to actions.
 
-尽管有这些令人鼓舞的初步结果，但我们预计还有很大的改进空间。特别是，由于离线model-based算法无法使用额外的经验来改进动力学模型，因此我们预计此类算法需要在数据支持之外的区域谨慎使用模型。**量化 <font color=CadetBlue>不完美的动力学模型</font> 带来的风险**，并适当地**将风险与回报进行权衡**，是构建强大的离线model-based RL算法的关键因素。为此，我们修改了 MBPO，**加入了<font color=CadetBlue>基于模型误差估计的</font>奖励函数<font color=DodgerBlue>惩罚项</font>**。至关重要的是，此估计依赖于模型，并且不一定平等地 惩罚 所有的 OOD 状态和操作，而是根据<font color=CadetBlue>估计的模型误差大小</font>制定惩罚。此外，这种估计是针对状态和动作进行的，允许对两者进行泛化，这<u>与仅评估动作不确定性的model-free方法形成鲜明对比</u>。
+尽管有这些令人鼓舞的初步结果，但我们预计还有很大的改进空间。特别是，由于离线model-based算法无法使用额外的经验来改进动力学模型，因此我们认为此类算法需要在数据支持之外的区域谨慎使用模型。**量化 <font color=CadetBlue>不完美的动力学模型</font> 带来的风险**，并适当地**将风险与回报进行权衡**，是构建强大的离线model-based RL算法的关键因素。为此，我们修改了 MBPO，**加入了<font color=CadetBlue>基于模型误差估计的</font>奖励函数<font color=DodgerBlue>惩罚项</font>**。至关重要的是，此估计依赖于模型，并且不一定平等地 惩罚 所有的 OOD 状态和操作，而是根据<font color=CadetBlue>估计的模型误差的大小</font>制定惩罚。此外，这种估计是针对状态和动作进行的，允许对两者进行泛化，这<u>与仅评估动作不确定性的model-free方法形成鲜明对比</u>。
 
 > we develop a practical method that estimates model error using the predicted variance of a learned model, uses this uncertainty estimate as a reward penalty, and trains a policy using MBPO in this uncertainty-penalized MDP. 
 
-我们开发了一种实用的方法，该方法使用 <font color=CadetBlue>学习模型的预测方差</font> 来估计 模型误差，将这种 不确定性估计 用作 奖励的 惩罚项，并在这种 <font color=DarkOrchid>不确定性惩罚的MDP</font> 中使用MBPO训练策略。
+算法使用 <font color=CadetBlue>学习的模型的预测方差</font> 来估计 模型误差，将这种<font color=DarkOrchid>不确定性估计</font>用作 奖励的<font color=DodgerBlue>惩罚项</font>，并在这种<font color=DarkOrchid>不确定性惩罚的MDP</font>中使用MBPO训练策略。
 
 > Uncertainty quantification, a key ingredient to our approach, is critical to good performance in model-based RL both theoretically and empirically, and in optimal control. Unlike these works, we develop and leverage proper uncertainty estimates that particularly suit the offline setting.
 
-<font color=DarkOrchid>不确定性量化</font>是我们方法的关键要素，在理论上和实证上对于model-based强化学习和最优控制的良好性能至关重要。与这些工作不同的是，我们要开发和利用 适合离线环境的 正确的 不确定性估计。
+<font color=DarkOrchid>不确定性量化</font>是我们方法的关键要素，在理论上和实证上都已经说明了它对于model-based RL和最优控制的性能至关重要。不一样的是，我们需要开发和利用<font color=DodgerBlue>适合离线环境的</font><font color=CadetBlue>正确的</font>不确定性估计。
 
 
 
@@ -99,7 +105,7 @@ Model-free 的算法在一些环境下可以达到合理的性能，但它们的
 
 > our goal is to design an offline model-based reinforcement learning algorithm that can take actions that are not strictly within the support of the behavioral distribution. Using a model gives us the potential to do so.  However, models will become increasingly inaccurate further from the behavioral distribution, and vanilla model-based policy optimization algorithms may exploit these regions where the model is inaccurate. This concern is especially important in the offline setting, where mistakes in the dynamics will not be corrected with additional data collection.
 
-我们的目标是设计一种离线model-based RL算法，可以采取 <font color=CadetBlue>不严格地包含在行为分布（$\pi^B$产生的）</font> 的动作。使用模型给予我们这么做的潜力。然而，模型在远离行为分布的地方会变得越来越不准确，而传统的 model-based 策略优化算法可能会利用这些模型不准确的区域。在离线环境中，这个问题就尤为重要，因为动力学模型的错误不会有额外的数据收集来进行纠正。
+我们的目标是设计一种离线model-based RL算法，可以采取 <font color=CadetBlue>不严格地包含在行为分布（$\pi^B$产生的）</font> 的动作。使用模型给予了我们这么做的潜力。然而，模型在远离行为分布的地方会变得越来越不准确，而传统的 model-based 策略优化算法可能会利用这些模型不准确的区域。在离线环境中，这个问题就尤为重要，因为动力学模型的错误不会有额外的数据收集来进行纠正。
 
 > For the algorithm to perform reliably, it’s crucial to balance the return and risk: 1. the potential gain in performance by escaping the behavioral distribution and finding a better policy, and 2. the risk of overfitting to the errors of the dynamics at regions far away from the behavioral distribution. To achieve the optimal balance, we first bound the return from below by the return of a constructed model MDP penalized by the uncertainty of the dynamics (Section 4.1). Then we maximize the conservative estimation of the return by an off-the-shelf reinforcement learning algorithm, which gives MOPO, a generic model-based off-policy algorithm (Section 4.2). We discuss important practical implementation details in Section 4.3.
 
@@ -110,7 +116,7 @@ Model-free 的算法在一些环境下可以达到合理的性能，但它们的
 
 为了实现最佳平衡，我们
 
-1. 通过对<font color=DodgerBlue>已构建的MDP模型</font>以<font color=CadetBlue>动力学模型的不确定性</font>进行惩罚，从下界限制了奖励函数（第1节）。
+1. 通过对一个<font color=DodgerBlue>已构建的MDP模型</font>以<font color=CadetBlue>动力学模型的不确定性</font>作为惩罚项，从下界限制了奖励函数（第1节）。
 2. 通过一个现成的RL算法最大化对回报的保守期望，得到了MOPO，一个通用的基于模型的离线策略算法（第2节）。
 3. 在第3节讨论了重要的实际实施细节。
 
@@ -134,15 +140,15 @@ Model-free 的算法在一些环境下可以达到合理的性能，但它们的
 $$
 G_{\widehat{M}}^{\pi}(s,a):=\sum_{s^{\prime}\sim\widehat{T}(s,a)}[V_{M}^{\pi}(s^{\prime})]-\sum_{s^{\prime}\sim T(s,a)}[V_{M}^{\pi}(s^{\prime})]
 $$
-$G_{\widehat{M}}^{\pi}(s,a)$ 将动力学模型的估计误差和奖励的估计误差联系了起来。它用 $V_\pi$ 衡量了$M$ 和 $\widehat{M}$ 之间的差异，当这两者相同时，$G_{\widehat{M}}^{\pi}(s,a)=0$。所以，也体体现了策略 π 在两个MDP中表现的差异。
+**$G_{\widehat{M}}^{\pi}(s,a)$ 将动力学模型的估计误差和奖励的估计误差联系了起来。**它用 $V_\pi$ 衡量了$M$ 和 $\widehat{M}$ 之间的差异，当这两者相同时，$G_{\widehat{M}}^{\pi}(s,a)=0$。所以，也体体现了策略 π 在两个MDP中表现的差异。
 
-有公式 1：
+有 <a name="1">等式1</a>：
 $$
 \eta_{\widehat M}(\pi)-\eta_M(\pi)=\gamma_{(s,a)\sim\rho_{\widehat T}^{\pi}}\left[G_{\widehat M}^{\pi}(s,a)\right]
 $$
 该式体现了策略 π 在两个MDP中表现的差异。如果能够获得RHS(右式，Right Hand Side)的上界或者预估右式，则可以用它作为 $\eta_M(\pi)$ 的估计误差的上限。
 
-有推论 公式2：
+有推论 <a name="2">等式2</a>：
 $$
 \eta_M(\pi)=\underset{(s,a)\sim\rho_{\hat{T}}^{\pi}}{\bar{\mathbb{E}}}\left[r(s,a)-\gamma G_{\widehat{M}}^{\pi}(s,a)\right]\geq\underset{(s,a)\sim\rho_{\hat{T}}^{\pi}}{\bar{\mathbb{E}}}\left[r(s,a)-\gamma|G_{\widehat{M}}^{\pi}(s,a)|\right]
 $$
@@ -152,7 +158,7 @@ $$
 
 因为$V_{M}^{\pi}$ 不知道，计算$G_{\widehat M}^{\pi}$ 就很困难。考虑到这一点，我们就可以将$G_{\widehat M}^{\pi}$ 替换为 只依赖于动力学模型 $\widehat{T}$误差的上界。
 
-设 $\mathcal{F}$ 为 从 $\mathcal{S}$ 映射到 $\mathbb{R}$ 的一个函数集合，其中包含了 $V_{M}^{\pi}$ 。
+设 $\mathcal{F}$ 为 从 $\mathcal{S}$ 映射到 $\mathbb{R}$ 的一个函数集合，其中包含了 $V_{M}^{\pi}$ ，有 <a name="3">式 3</a>：
 
 $$
 |G_{\widehat{M}}^{\pi}(s,a)|\leq\sup\limits_{f\in\mathcal{F}}\left|\sideset{}{}{\mathbb{E}}_{s'\sim\widehat{T}(s,a)}\right.[f(s')]-\left.\sideset{}{}{\mathbb{E}}_{s'\sim T(s,a)}[f(s')]\right|=:d_{\mathcal{F}}(\widehat{T}(s,a),T(s,a))
@@ -164,12 +170,12 @@ $$
 D_{\mathcal{F}}(P,Q)=\sup\limits_{f\in\mathcal{F}}|\mathbb{E}_{X\sim P}f(X)-\mathbb{E}_{Y\sim Q}f(Y)|=\sup\limits_{f\in\mathcal{F}}|Pf-Qf|;
 $$
 
-参考阅读：[积分概率度量 - 郑之杰的个人博客](https://0809zheng.github.io/2022/12/06/ipm.html)
+参考阅读：[Integral Probability Metric - wikipedia](https://en.wikipedia.org/wiki/Integral_probability_metric)、[积分概率度量 - 郑之杰的个人博客](https://0809zheng.github.io/2022/12/06/ipm.html)
 
 选择不同的函数空间 $\mathcal{F}$ ，会导致 IPM 具有不同的形式，下面给出一些常见的距离度量：
 
 
-1. 若 $\mathcal{F}$ 满足 $\mathcal{F}=\{f:\|f\|_{\infty}\leq1\}$ ，则 $d_\mathcal{F}$ 的形式是*[总变差 ](https://en.wikipedia.org/wiki/Total_variation_distance_of_probability_measures)*：
+1. 若 $\mathcal{F}$ 满足 $\mathcal{F}=\{f:\|f\|_{\infty}\leq1\}$ ，则 $d_\mathcal{F}$ 的形式是*[总变差(total variation distance) ](https://en.wikipedia.org/wiki/Total_variation_distance_of_probability_measures)*：
 
     ![total variation distance](images/total variation distance.png)
 
@@ -200,15 +206,13 @@ $$
 
 方法(ii)的优点在于它结合了状态空间的几何特性，但代价是需要额外的假设，但这通常在我们的设置中难以验证。另一方面，方法(i)中的假设非常温和且通常在实践中成立。因此，除非我们对MDP有一些先验知识，否则**我们应该更倾向于选择方法(i)**。我们将上述选项中的假设和不等式总结如下。
 
-其他参考阅读：[Total Variation Distance 总变差 - 知乎](https://zhuanlan.zhihu.com/p/352946799)、[总变差 - wikipedia](https://web.archive.org/web/20080708205758/http://www.stat.berkeley.edu/~sourav/Lecture2.pdf)
-
-
+参考阅读：[Total Variation Distance -  wikipedia](https://en.wikipedia.org/wiki/Total_variation_distance_of_probability_measures)、[Total Variation Distance 总变差 - 知乎](https://zhuanlan.zhihu.com/p/352946799)、[利普希茨连续 - wikipedia](https://zh.wikipedia.org/wiki/利普希茨連續)、[ Distances between probability measures - berkeley](https://web.archive.org/web/20080708205758/http://www.stat.berkeley.edu/~sourav/Lecture2.pdf)、
 
 
 
 设 c 是一个常量，$\mathcal{F}$ 是一个值函数集合，则对所有策略 π 都有 $V_{M}^{\pi}\in c\mathcal{F}$
 
-总结了一个通式：
+根据 [式3](#3) 可得：<a name="6">不等式6</a>
 $$
 |G_{\widehat M}^{\pi}(s,a)|\leq cd_{\mathcal F}(\widehat T(s,a),T(s,a)).
 $$
@@ -232,7 +236,7 @@ $$
 $$
 \widetilde{M}=(\mathcal{S},\mathcal{A},\widehat{T},\tilde{r},\mu_{0},\gamma).
 $$
-下式证明了 $\widetilde{M}$  预测的总奖励函数 $\eta_{\widetilde{M}}(\pi)$ 将比真实环境中的小，意义是： $\widetilde{M}$  是保守的， $\eta_{\widetilde{M}}(\pi)$ 可以作为真实环境中 $\eta_{M}(\pi)$ 的下界(真值下界)。
+下式证明了 $\widetilde{M}$ 预测的总奖励函数 $\eta_{\widetilde{M}}(\pi)$ 将比真实环境中的小，意义是： $\widetilde{M}$  是保守的， $\eta_{\widetilde{M}}(\pi)$ 可以作为真实环境中 $\eta_{M}(\pi)$ 的下界(真值下界)。（由 [等式2](#2) 和 [不等式6](#6) 推导而出）
 $$
 \begin{aligned}
 \eta_{M}(\pi)& \geq\sum_{(s,a)\sim\rho_{\hat{T}}^{\pi}}\bar{\mathbb{E}}_{(s,a)\sim\rho_{\hat{T}}^{\pi}}\left|r(s,a)-\gamma|G_{\widehat{M}}^{\pi}(s,a)|\right|\geq\bar{\mathbb{E}}_{(s,a)\sim\rho_{\hat{T}}^{\pi}}\left[r(s,a)-\lambda u(s,a)\right]  \\
@@ -244,30 +248,35 @@ $$
 
 ##  Policy optimization on uncertainty-penalized MDPs
 
+在 Algorithm 1 中优化了 *不确定性惩罚的MDP $\widetilde{M}$*  的策略
+
 ![image-20231118155821709](images/image-20231118155821709.png)
 
 ### Theoretical Guarantees for MOPO
 
+这一部分就是进行对理论性保证进行分析。
 
+先作符号规定：
 
-| Symbol      | 含义                         |
-| :---------- | ---------------------------- |
-| $\pi^\star$ | 在模型M上训练的最优策略      |
-| $\pi^B$     | 生成训练数据的策略           |
-| $\hat{\pi}$ | 参考上述Algorithm1学得的策略 |
+| Symbol      | 含义                            |
+| :---------- | ------------------------------- |
+| $\pi^\star$ | 在模型M上的最优策略             |
+| $\pi^B$     | 生成训练数据的策略，行为策略    |
+| $\hat{\pi}$ | 参考上述 Algorithm 1 学得的策略 |
 
+定义 $\epsilon_u(\pi)$，对 不确定性量化的期望：
 
 $$
 \epsilon_u(\pi):=\bar{\mathbb{E}}_{(s,a)\sim\rho_{\widehat{T}}^{\pi}}[u(s,a)]
 $$
-注意 $\epsilon_u$ 依赖于 $\widehat T$ ，但为了简单起见，我们在符号中省略了这种依赖关系。
+注意，$\epsilon_u$ 依赖于 $\widehat T$ ，但为了简单起见，我们在符号中省略了这种依赖关系。
 
- $\epsilon_u$ 衡量了在策略 π 的引导下模型的误差。
+ $\epsilon_u$ 衡量了在策略 π 的引导下模型的误差：
 
 1. 如果$\pi=\pi^{\mathrm{B}}$，那么 $\widehat T$ 是基于 $\pi^B$ 收集的策略训练的，所以对于 $(s,a)\sim\rho_{\widehat{T}}^{\pi^{\mathrm{B}}}$ 相对来说是准确的，因此  u(s, a) 较小，从而 $\epsilon_u(\pi^{\mathbf{B}})$ 也很小。
 2. 另一种情况是，如果策略 π 总是访问数据分布以外的状态，明显 $\rho_{\hat{T}}^{\pi^{B}}$ 将与 $\rho_{\hat{T}}^{\pi}$ 不同。那么 占用量度 $\rho_{\widehat{T}}^{\pi}(s,a)$ 所产生的 (s, a) ，将导致误差估计器 u(s, a) 的值也比较大。最终 $\epsilon_u(\pi^{\mathbf{B}})$ 也很大。
 
-到现在，我们可以推出一个结论：
+到现在，我们可以推出一个结论：<a name="10">等式10</a>
 $$
 \eta_M(\hat{\pi})\geq\sup_{\pi}\{\eta_M(\pi)-2\lambda\epsilon_u(\pi)\}
 $$
@@ -275,11 +284,11 @@ $$
 
 ![image-20231118165206094](images/image-20231118165206094.png)
 
-根据上面的这个结论有：<a name="11"> </a>
+根据上面的 [等式 10](#10) 有结论：
 $$
 \eta_M(\hat{\pi})\geq\eta_M(\pi^\mathbf{B})-2\lambda\epsilon_u(\pi^\mathbf{B})
 $$
-据前述分析，$\epsilon_u(\pi^\mathbf{B})$ 很小，因此 $\hat{\pi}$ 的表现将至少比 $\pi^B$ 要好。
+这表明， $\hat{\pi}$ 的表现将至少比 $\pi^B$ 要好，因为据前述分析，$\epsilon_u(\pi^\mathbf{B})$ 很小。
 
 
 
@@ -288,64 +297,101 @@ $$
 $$
 \pi^\delta:=\underset{\pi:\epsilon_u(\pi)\leq\delta}{\arg\max}\;\eta_M(\pi)
 $$
-所以，当满足$\delta\geq\delta_{\mathrm{min}}$ 时，[上面该式](#11)变化为：
+所以，当满足$\delta\geq\delta_{\mathrm{min}}$ 时，[等式 10](#10)变化为：<a name="11">等式11</a>
 $$
 \eta_{M}(\hat{\pi})\geq\eta_{M}(\pi^{\delta})-2\lambda\delta
 $$
 
 学习到的策略 将至少与 <font color=CadetBlue>模型误差最大为 δ 的</font> 所有策略 一样好，换句话说，当不确定性量化 u(s, a) 足够小时。
 
-将最优策略 $\delta=\epsilon_{u}(\pi^{\star})$ 带入[上面该式](#11)，有：
+将最优策略 $\delta=\epsilon_{u}(\pi^{\star})$ 带入[等式 11](#11)，有：
 $$
 \eta_M(\hat{\pi})\geq\eta_M(\pi^*)-2\lambda\epsilon_u(\pi^*)
 $$
 这表明所学习的策略和最优策略之间的 次优性差距(suboptimality gap) 取决于误差 $\epsilon_{u}(\pi^{\star})$ 。
 
-
-
 $\rho_{\widehat{T}}^{\pi^{\star}}$ 越接近数据集，在 $(s,a)\sim\rho_{\widehat{T}}^{\pi^{\star}}$ 上的 u(s, a) 也将更小。动力学模型的不确定性误差越小，$\epsilon_{u}(\pi^{\star})$ 也越小。在极端情况下，u(s, a) = 0，此时有完美的动力学模型和不确定性量化，可以找到最优策略
 
 
 
-根据上式RHS，调节 δ 可以平衡return和risk：当 δ 上升时，return $\eta_{M}(\pi^{\delta})$ 上升，因为 $\pi^\delta$ 能够从更大的策略范围中进行学习，增大了探索；然而风险因子 2λδ 也会上升，因此如何选择最优的 δ 是explore与exploit的关键。
+根据 [等式 11](#11) 右式，调节 δ 可以平衡return和risk：当 δ 上升时，return $\eta_{M}(\pi^{\delta})$ 上升，因为 $\pi^\delta$ 可以从更大的策略范围中学习，增大了探索；然而风险因子 2λδ 也会上升，因此如何选择最优的 δ 是平衡explore与exploit的关键。
 
-我们注意到，δ仅用于分析，并且我们的算法自动实现最佳平衡，因为[方程](#11)适用于任何δ。
+我们注意到，δ仅用于分析，并且我们的算法自动实现最佳平衡，因为 [等式 11](#11) 适用于任何δ。
 
 ##  Practical implementatio
 
-本文的算法基于MBPO。用神经网络构造一个高斯分布 作为 动力学模型 $T$ ，预测下一状态和奖励。
+本文的算法基于MBPO。用神经网络构造一个<font color=HotPink>高斯分布</font>作为 动力学模型 $T$ ，预测下一状态和奖励：
 $$
 \widehat{T}_{\theta,\phi}(s_{t+1}, r|s_{t},a_{t})=\mathcal{N}(\mu_{\theta}(s_{t},a_{t}),\Sigma_{\phi}(s_{t},a_{t}))
 $$
 
 
-我们可以学习一个集成模型（由N个动力学模型 $\{\widehat{T}_{\theta,\phi}^{i}=\mathcal{N}(\mu_{\theta}^{i},\Sigma_{\phi}^{i})\}_{i=1}^{N}$ 构成），每个模型使用最大似然独立地进行优化。
+然后学习一个集成模型（由N个动力学模型 $\{\widehat{T}_{\theta,\phi}^{i}=\mathcal{N}(\mu_{\theta}^{i},\Sigma_{\phi}^{i})\}_{i=1}^{N}$ 构成，ensemble of N dynamics models），每个模型使用<font color=HotPink>最大似然</font><font color=DodgerBlue>独立地</font>进行优化。
 
-我们的目标是设计一个 <font color=DodgerBlue>能够捕捉到真实的动力学模型 的</font> <font color=CadetBlue>认知不确定性和偶然不确定性 的</font> 不确定性估计器。
+MOPO与MBPO最重要的区别在于使用了<font color=HotPink>不确定性量化</font>。我们的目标是设计一个 <font color=DodgerBlue>能够捕捉到真实的动力学模型 的</font> <font color=CadetBlue>认知不确定性和偶然不确定性 的</font> 不确定性估计器。在理论上已经证明，Bootstrap ensembles能够一致地估计总体均值，并在 model-based RL 中表现良好。与此同时，当模型被正确指定时，高斯概率模型的学习方差在理论上可以重现真实的任意不确定性。
 
-MOPO与MBPO最重要的区别在于使用了不确定性量化。我们的目标是设计一种不确定性估计器，它既能捕捉真实动力学模型的认识不确定性，也能捕捉真实力学的任意不确定性。在理论上已经证明，Bootstrap ensembles能够一致地估计总体均值，并在 model-based RL 中表现良好。与此同时，当模型被正确指定时，高斯概率模型的学习方差在理论上可以重现真实的任意不确定性。
-
+> **Bootstrap ensembles**
+>
+> 贝叶斯神经网络与普通神经网络的区别在于它的权重不再是一个固定的值，而是一个分布，这个分布通常可以是高斯分布，因此一个贝叶斯神经网络是由一个网络+一些权重分布构成的。
+>
 > 我们利用相互独立的数据训练N个贝叶斯神经网络，这些网络的输入为 $\left \{ s_t, a_t \right \}$，输出为一个分布 $p(s_{t+1}|s_t, a_t)$。我们把这 N 个网络的输出进行平均，从而得到一个更加鲁棒的输出。
 >
 > 为了得到相互独立的神经网络，需要数据集 {D} 是相互独立的。但是，通常来说我们只需要从 D 中随机采样，得到N个子集就行了。
 >
-> 这个方法在强化学习中基本上还是可行的，它对动力学模型的逼近是比较粗略的，这是因为我们通常不会训练超过10个网络。此外，随机采样也不是必要的，因为SGD和随机初始化已经可以使模型相互独立了。
+> 这个方法在强化学习中基本上还是可行的，它对动力学模型的逼近是比较粗略的，这是因为我们通常不会训练超过10个网络。此外，随机采样也不是必要的，因为SGD和随机初始化已经可以使模型相互独立了。[^Model-Based RL: 模型+最优控制器]
 
-为了更好的评估不确定性，本文设计使用 <font color=CadetBlue>学习的 集成模型 的最大标准差</font> 作为 <font color=DarkOrchid>不确定性估计器</font>，：使用frobenius范数的形式
+为了更好的评估不确定性，本文设计使用 <font color=CadetBlue>学习的 集成模型 的最大标准差</font> 作为 <font color=DarkOrchid>不确定性估计器(uncertainty estimator)</font>，使用<font color=HotPink>Frobenius范数</font>的形式：
 $$
 u(s,a)=max_{i=1}^{N}\|\Sigma_{\phi}^{i}(s,a)\|_{\mathrm{F}}.
 $$
-我们选择使用协方差矩阵范数的最大值而不是均值，以使策略更加保守和鲁棒。虽然这个估计器缺乏理论保证，但我们发现在实践中它足够准确，能够实现良好的性能。
+论文作者选择使用 <font color=MediumSeaGreen>标准差矩阵范数的最大值</font> 而不是均值，以使策略更加保守和鲁棒。虽然这个估计器缺乏理论保证，但我们发现在实践中它足够准确，能够实现良好的性能。
 
-因此，MOPO算法的实际的<font color=DarkOrchid>不确定性惩罚的奖励函数(*uncertainty-penalized reward*)</font>为：
+**Frobenius范数**是矩阵的一种范数，用于衡量矩阵的大小或矩阵之间的距离，记为 $||·||_F$。矩阵A的Frobenius范数定义为矩阵A各项元素的绝对值平方的总和，即
+$$
+||·||_F=\sqrt{\sum_{i=1}^{\mathrm{m}}\sum_{j=1}^{n}\left|a_{ij}\right|^2}
+$$
+有了这个之后，就要在原始reward上添加penalty。因此，MOPO算法的实际的<font color=DarkOrchid>不确定性惩罚的奖励函数(*uncertainty-penalized reward*)</font>为：
 $$
 \tilde{r}(s,a)=\hat{r}(s,a)-\lambda max_{i=1,\dots,N}\|\Sigma_{\phi}^{i}(s,a)\|_{\mathrm{F}}
 $$
 其中，$\hat r$ 是 $\widehat T$ 预测奖励的均值。
 
-惩罚系数 λ 应被视为一个用户选择的超参数。由于我们没有<font color=CadetBlue>真正的可容许的 </font>误差估计器，上述理论中规定的 λ 值在实践中可能不是最优选择；如果我们的启发式函数u(s, a)低估了真实误差，则 λ 应该更大，而如果 u 高估了真实误差，则 λ 应该更小。
+惩罚系数 λ 应被视为一个用户选择的超参数。由于我们没有<font color=DodgerBlue>真正的</font><font color=CadetBlue>可容许的</font>误差估计器，上述理论中规定的 λ 值在实践中可能不是最优选择；如果我们的启发式函数u(s, a)低估了真实误差，则 λ 应该更大，而如果 u 高估了真实误差，则 λ 应该更小。
+
+以上部分推导的流程图如下：
+
+![image-20231119163452886](images/image-20231119163452886.png)
+
+## Pseudocode
 
 ![image-20231118190433212](images/image-20231118190433212.png)
+
+#  Experiments/Conclusion/Broader Impact
+
+可参考其他博客。
+
+本文的实验需要验证三个问题：
+
+1. 与以前的sota方法相比在offline的benchmark上表现如何
+2. MOPO是否能够解决泛化到行为分布以外的任务
+3. MOPO中的各项组件如何影响表现
+
+
+
+- D4RL benchmark
+  - 实验环境：half-cheetah / hopper / walker2d
+  - 数据集类型：random / medium / mixed / medium-expert
+- tasks requiring out-of-distribution generalization
+  - 两个任务：half-cheetah-jump / ant-angle
+  - 新环境下的奖励函数需要智能体脱离数据集中的行为策略。
+
+
+
+
+
+> Our work opens up a number of questions and directions for future work. First, an interesting avenue for future research to incorporate the policy regularization ideas of BEAR and BRAC into the reward penalty framework to improve the performance of MOPO on narrow data distributions (such as the “medium” datasets in D4RL). Second, it’s an interesting theoretical question to understand why model-based methods appear to be much better suited to the batch setting than model-free methods. Multiple potential factors include a greater supervision from the states (instead of only the reward), more stable and less noisy supervised gradient updates, or ease of uncertainty estimation. Our work suggests that uncertainty estimation plays an important role, particularly in settings that demand generalization. However, uncertainty estimation does not explain the entire difference nor does it explain why model-free methods cannot also enjoy the benefits of uncertainty estimation. For those domains where learning a model may be very difficult due to complex dynamics, developing better model-free offline RL methods may be desirable or imperative. Hence, it is crucial to conduct future research on investigating how to bring model-free offline RL methods up to the level of the performance of model-based methods, which would require further understanding where the generalization benefits come from.
+
+我们的工作提出了许多未来研究的问题和方向。首先，一个有趣的未来研究方向是将BEAR和BRAC的策略正则化思想纳入奖励惩罚框架，以提高MOPO在狭窄数据分布（如D4RL中的“中等”数据集）上的性能。其次，理解为什么基于模型的方法似乎比基于无模型的方法更适用于批处理设置是一个有趣的理论问题。多个潜在因素包括来自状态的更大监督（而不仅仅是奖励），更稳定且噪声较小的监督梯度更新，或者不确定性估计的简化。我们的研究表明，不确定性估计起着重要作用，特别是在需要泛化的环境中。然而，不确定性估计并不能完全解释整个差异，也不能解释为什么无模型的方法也不能享受不确定性估计的好处。对于那些由于复杂的动力学模型而学习模型可能非常困难的领域，开发更好的无模型离线强化学习方法可能是可取的或势在必行的。因此，未来研究如何将无模型离线强化学习方法提升到基于模型的方法的性能水平至关重要，这需要进一步了解泛化的好处来自哪里。
 
 
 
@@ -358,3 +404,4 @@ $$
 
 
 [^安道龙的回答 - 知乎]:https://www.zhihu.com/question/53001128/answer/2715286504
+[^Model-Based RL: 模型+最优控制器]:https://zhuanlan.zhihu.com/p/391515447
