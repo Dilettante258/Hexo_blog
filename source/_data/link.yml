@@ -1,11 +1,14 @@
 - class_name: 友情链接
   class_desc: 
   link_list:
+    - name: 北雁云依的博客
+      link: https://blog.yunyi.beiyan.us/
+      avatar: https://blog.yunyi.beiyan.us/头像方.webp
+      descr: 把信拿去吧，你可以假戏真做
     - name: ZhevitzのBlog
       link: https://zhevitz.top/
-      avatar: https://zhevitz.top/upload/%25_QZ4%7D_0US@N727G3R9%7DSCX.png
+      avatar: https://zhevitz.top/upload/cabo.png
       descr: 密码学入门，逆向上路中
-
 - class_name: 网站
   class_desc: 值得推荐的网站
   link_list:
