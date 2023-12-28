@@ -51,7 +51,7 @@ Available platform plugins are: xcb, eglfs, minimal, minimalegl, offscreen, vnc,
 
 `opencv-python`依赖`numpy`，而对应的`numpy`依赖的版本要求是3.5-3.7之间。
 
-![img](https://img-blog.csdnimg.cn/f66565116d6948f4a6b6f8584c2b33f4.png)
+![img](http://106.15.139.91:40027/uploads/2312/658d4e7871cb8.png)
 
 随后安装一系列强化学习所需要的一系列库。
 
@@ -148,8 +148,8 @@ conda install matplotlib
 
 还有其他的需要的，自行安装。
 
-![image-20231018190455415](https://img-blog.csdnimg.cn/2e769f32154341beb5a5367df5be1b78.png)
+![image-20231018190455415](http://106.15.139.91:40027/uploads/2312/658d4e7f29cd2.png)
 
 测试安装效果
 
-![img](https://img-blog.csdnimg.cn/0e867f0a7eba42a1b924c4ad481004f0.png)
+![img](http://106.15.139.91:40027/uploads/2312/658d4e8286132.png)

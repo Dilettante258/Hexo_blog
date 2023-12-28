@@ -48,7 +48,7 @@ rbenv install 3.2.2
 rbenv global 3.2.2
 ```
 
-![image-20231207155627856](images/image-20231207155627856.png)
+![image-20231207155627856](http://106.15.139.91:40027/uploads/2312/658d4c60513fd.png)
 
 ```
 sudo apt-get install ruby-full build-essential zlib1g-dev

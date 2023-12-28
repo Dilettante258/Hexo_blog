@@ -19,7 +19,7 @@ mathjax: true
 
 > Okay, cool, thanks for coming. Thanks for the introduction. This is John, working with Tianku Kevin Yu, Gary Thomas, and Howie Stefano Erman James Zoe. Circuit 11 and Chelsea Finn, I'm Tony Ima from Stanford University. I guess everyone else is also from Santa Fe University, except Sergey who is from Berkeley. So, this is about model-based offline policy optimization.
 
-![image-20231112204847393](/images/image-20231112204847393.png)
+![image-20231112204847393](images/image-20231112204847393.png)
 
 
 
@@ -27,7 +27,7 @@ mathjax: true
 
 > I guess, um, let me start with the motivation of studying offline or at least my motivation of studying offline. The bigger picture is that there's a simple efficiency challenge in applying RL to many real-world applications, as we all know that RL is about trial and error. The technical flow is that you say, "I'm going to try the current strategy and collect feedbacks, and then I'm going to use the feedbacks to improve the strategy." So, this is a trial-and-error process, and we know how to solve this using this "self-go," for example, as long as we can try millions of games on a computer. However, in reality, if you use this for robotics or self-driving cars, then potentially you may have the problem that there are not enough samples you can collect from the real environment due to some physical or safety constraints. So, the question is, how do we reduce the amount of trials, the amount of samples we need to implement RL in real applications? One idea is model-based RL, which is considered a promising direction to reduce sample complexity. Another one is offline RL, which I'm going to talk about in a moment. There are also other ways, such as meta, multi-task, lifelong, and continuous RL, which are ways to amortize the cost, and maybe hierarchical, which could also reduce sample complexity. In this talk, I'm going to talk about offline RL, and the approach is model-based. In a nutshell, offline RL is about not having trials and hours to collect feedbacks from the real environment by trying your strategy. 
 
-![6197997a9fee6cfa4accd9406208f3cd](/images/6197997a9fee6cfa4accd9406208f3cd.png)
+![6197997a9fee6cfa4accd9406208f3cd](images/6197997a9fee6cfa4accd9406208f3cd.png)
 
 让我们从离线学习的 motivation 开始。大的背景是，在将强化学习应用于现实世界中存在一个明显的效率问题，我们都知道强化学习是通过试错来实现的。技术流程是这样的：“我要尝试当前的策略并收集反馈，然后我要利用这些反馈来改进策略。”所以，这是一个试错的过程，我们知道如何使用“自我对弈”来解决这个问题，例如只要我们可以在计算机上尝试数百万次游戏。
 
@@ -39,7 +39,7 @@ mathjax: true
 
 > So formally, the definition of offline RL is as follows. Sometimes it's also called batch reinforcement learning. We are given a batch of data, a collection of trajectories sampled from some policy $\pi_b$, sometimes called the behavior policy, and sometimes it's actually collected from a mixture of different policies. This collection of trajectories is sampled from the real environment, the true dynamics $T^{\star}$, and we start from $s_0$ and execute this policy $\pi_b$ to get the structures and rewards. Our goal is to learn a policy that maximizes the expected return on the real environment. The expected return is the sum of the return over time, with the expectation over the randomness of the initial states and the randomness of the policy π. Offline really means that we don't have any additional interactions with the real environment, so after seeing this trajectory of samples, you cannot interact with the real environment. 
 
-![35ebd01e2d784f849ab4464bd19a16dd](/images/35ebd01e2d784f849ab4464bd19a16dd.png)
+![35ebd01e2d784f849ab4464bd19a16dd](images/35ebd01e2d784f849ab4464bd19a16dd.png)
 
 正式来说，离线强化学习的定义如下。有时也称为批量强化学习。我们被给定一批数据，即 一组从某个策略$\pi_b$（有时称为行为策略）采样得到的轨迹 ，有时实际上是从不同策略的混合中收集的。这些轨迹的采样是从真实环境，真实的动态情况 $T^{\star}$ 中进行的，我们从初始状态$s_0$开始执行策略$\pi_b$，以获得状态和奖励。我们的目标是学习一个策略，使得在真实环境中期望回报最大化。期望回报是随时间的回报之和，其中期望是在初始状态的随机性和策略π的随机性上求取的。离线实际上意味着我们没有与真实环境的任何其他交互，因此在看到这些样本轨迹之后，你不能与真实环境进行交互。
 
@@ -49,7 +49,7 @@ mathjax: true
 
 > It's well known that there's a so-called distribution shift issue, for offline reinforcement learning. Roughly speaking, anything you learn from the batch only guarantees accurate predictions on the batch data distribution. The extrapolation to outside the batch data execution is not guaranteed. So, if you execute your policy, you'll learn some policies that have to go outside the batch distribution, then there's a domain shift issue. For example, this domain shift could be damaging if you learn your q function on a batch and then it may overestimate the q function outside the support of the batch. Here is a simple experiment. We have a grid world example. There's an initial state at zero, and a unique goal. You can go left, upward, rightward, and so forth. We have some batch data, which is only a single trajectory from the initial state to the goal. If you learn on the batch data the value function using either kind of Bellman equation or some color approach, then what you see is that the value function learned on the batch is pretty correct on the batch itself, but it wrongly extrapolates outside the batch. The value function actually linearly extrapolates, so the largest value function is obtained on the top-left corner, which is clearly wrong because the large value should be at the goal. This extrapolation outside the batch is wrong and damaging because if you use this value function to induce some policy, even assuming you have the true dynamics, then you're going to just follow the arrows and go to the top-left corner instead of going to the goal.
 
-![d92156d5aed8832d38d3a1f041d348ca](/images/d92156d5aed8832d38d3a1f041d348ca.png)
+![d92156d5aed8832d38d3a1f041d348ca](images/d92156d5aed8832d38d3a1f041d348ca.png)
 
 众所周知，离线强化学习存在所谓的分布偏移问题。粗浅地说，你从批量数据中学到的任何东西只能保证在批量数据分布上进行准确预测。对于数据集外之外的执行情况，无法保证预测的准确性。因此，如果你执行你的策略，学到的一些策略必须超出数据集数据的分布，那么就会出现领域偏移问题。例如，如果你在数据集的数据上学习了Q函数，然后在数据集外高估了Q函数，这种分布偏移可能会对算法的性能造成损害。
 
@@ -61,7 +61,7 @@ mathjax: true
 
 > A common idea to deal with the domain shift or distribution shift issue is what I call "strong passive pessimism" or "strong conservatism". I'm just inviting this word for contrasting with the slightly milder conservatives I'm going to talk about in this talk. So basically, the idea is that you should stay inside the support of the batch data distribution. In other words, you only want to visit those states that you are very certain about. This is kind of the basic idea in many of the prior works. Here, BCQ, BEAR and BRAC are model-based approaches which try to restrict the action to be close to the action that we have seen. Vince and CQL try to penalize either the value function or the Q function outside the batch data distribution.The question we are asking here, one of the motivating points for us to design an algorithm, is whether we can risk leaving the support of the batch data in exchange for a higher return. Sometimes you want to leave the support of the batch data because there's a better approach to achieve the goal. However, we are less certain about leaving the support; we have to take the risk and balance it for a higher possible return.
 
-![34e43d8968cce446625c4e1689aa1f61](/images/34e43d8968cce446625c4e1689aa1f61.png)
+![34e43d8968cce446625c4e1689aa1f61](images/34e43d8968cce446625c4e1689aa1f61.png)
 
 处理分布偏移问题的一种常见思路是我所称的“强烈的被动悲观主义”(strong passive pessimism) 或“强烈的保守主义”(strong conservatism)。我只是用这个词来对比一下我在这个演讲中要谈到的稍微温和的保守主义。
 
@@ -75,7 +75,7 @@ mathjax: true
 
 > Let me demonstrate the main idea of the talk, which is actually very simple, on a simple toy case: the offline multi-armed bandit problem. This is a dramatic simplification, but it turns out to be almost the same as offline reinforced learning, at least from the perspective of this talk. This is basically my mandate, but you can only pull your arm once. It's like you are doing the last bet in the casino, and you have to go home after this. You cannot do any trials and errors anymore. I'm not going to use the casino as an example; I'm going to use Yelp. Let's say there are four restaurants. You have some past reviews for these four restaurants. Let's assume that the reviews are independent and now you have to choose one restaurant to go to. You want to maximize the taste, maximize the stars of the restaurant. Here, I have been in this kind of  situation where for some restaurant you only have one review, and for some other restaurants, you have 10k reviews, and they have different mean stars.
 
-![b82ee4fec551c13640201eca9e08e102](/images/b82ee4fec551c13640201eca9e08e102.png)
+![b82ee4fec551c13640201eca9e08e102](images/b82ee4fec551c13640201eca9e08e102.png)
 
 让我在一个简单的案例中展示这个演讲的主要思路，这实际上非常简单：离线 多臂老虎机问题。这是一个极端简化的情况，但从这个演讲的角度来看，它几乎与离线强化学习相同。
 
@@ -97,7 +97,7 @@ mathjax: true
 >
 > This is the main idea of this paper. Here is a super-trivial multi-armed bandit, and the only thing we have to do is to extend this to reinforcement learning.
 
-![91cf0d9fd9b0f2cb99cf5560501804c7](/images/91cf0d9fd9b0f2cb99cf5560501804c7.png)
+![91cf0d9fd9b0f2cb99cf5560501804c7](images/91cf0d9fd9b0f2cb99cf5560501804c7.png)
 
 如果你将强保守主义方法应用于离线环境中的多臂老虎机问题，这意味着你应该考虑停留在数据集的支持范围内。当然，在某种意义上，这个支持范围并不是一个明确定义的概念，因为它对任何小的扰动都不具有鲁棒性。所以在这里，我将支持范围解释为你需要在批量数据中有足够的密度（占比） - 这也是之前的工作试图使用的方法。你需要停留在密度足够大的地方。
 
@@ -115,7 +115,7 @@ mathjax: true
 >
 > And then after you get this certain quantification, you say, "I'm going to maximize the lower confidence bound." It had pi minus e of pi, and then um then that's the two steps. So basically, this is what this talk is about, and I'm going to describe a little bit how do I do step one, and step two is pretty simple, basically, you just apply some optimization algorithm optimizing over the policy.
 
-![image-20231112181541206](/images/image-20231112181541206.png)
+![image-20231112181541206](images/image-20231112181541206.png)
 
 所以第一步是我们建立一个回归的一定条件，我们定义不确定性量度(UQ)   $\eta^{\star}(\pi)$，这是在某个区间内的策略 π 在真实环境下期望回报 $\hat{\eta}$ 的一个上下界。你可以隐藏 $\hat{\eta}(\pi)\pm e(\pi)$。 
 
@@ -141,7 +141,7 @@ mathjax: true
 >
 > This is basically the how the reason we do this is that this guarantees that we can have a lower bound for the real return. Potentially, there could be better ways to do it. I will discuss this more at the end, in the open questions.
 
-![db4c5b7d68de14104b4668a365018341](/images/db4c5b7d68de14104b4668a365018341.png)
+![db4c5b7d68de14104b4668a365018341](images/db4c5b7d68de14104b4668a365018341.png)
 
 那么我们如何为回报建立一种特定的分类？我们采用基于模型的方法，意味着我们从学习动态的不确定性量度(UQ)开始，然后将该不确定性量度转化为对回报的不确定性量度。
 
@@ -169,7 +169,7 @@ mathjax: true
 >
 >To remind you, the IPM is a way to measure the distance between two distributions via the test function F belonging to the family F. You look at the expectation of F under the two distributions, take the differences, and then take the sup over all the test functions. This allows us to unify a few different cases. For example, if you assume V-pi-T-star is L-Lipschitz, then the distance is the Wasserstein distance. If the dynamics are deterministic, then the distance is just the L2 distance. If V-pi-T-star is bounded, then the distance is the total variation distance. If T-star is some kind of kernel space, then df could be the maximum mean discrepancy distance.
 
-![3d225963ef24d7f2abb02c84b326e092](images/3d225963ef24d7f2abb02c84b326e092.png)
+![3d225963ef24d7f2abb02c84b326e092](http://106.15.139.91:40027/uploads/2312/658d4d1d16fca.png)
 
 ==暂时还没看懂==
 
@@ -195,7 +195,7 @@ So then we measure the quality of the dynamics by estimating the distance betwee
 
 > With this, we can prove almost the same result, but just with a more general assumption. So, it's basically the same guarantee. We know that E of pi of the same form is our estimator for the true return.
 
-![image-20231112183924976](/images/image-20231112183924976.png)
+![image-20231112183924976](images/image-20231112183924976.png)
 
 通过这种方法，我们可以证明几乎相同的结果，只是基于一个更一般的假设。因此，基本上是相同的保证。我们知道$e(\pi)$具有相同的形式，它是我们对真实情况下return的估计器。
 
@@ -205,7 +205,7 @@ So then we measure the quality of the dynamics by estimating the distance betwee
 
 > I'm going to escape the proof sketch. I will just flash it because I have limited time. The proof sketch is simple. It has been done in prior work. Basically, you're trying to build the upper bound for eta star pi minus eta hat pi in the height path, which is the return on the virtual environment. It has star pi, which is the return on the real environment. The first step is to do some kind of telescoping sum (detailed explanation skipped). The test concept was instant expectation, a way to measure the differences between that and t star under the test function of v pi. You then use the IPM definition and change it to IPM, knowing that IPM is less than the u(s,a). 
 
-![image-20231112184338599](/images/image-20231112184338599.png)
+![image-20231112184338599](images/image-20231112184338599.png)
 
  $\eta^{\star}(\pi)$ 在区间$\hat{\eta}(\pi)$
 
@@ -217,7 +217,7 @@ So then we measure the quality of the dynamics by estimating the distance betwee
 
 > With this configuration, we can do a second step, which is the model voice-based policy optimization with the reward penalty. In the second set, we are trying to optimize pi. The lower bound e to pi minus e of pi can be written as the expectation of r of x a minus lambda of u of s. Since what's under the expectation is the same, you can merge them together into a single expectation. You realize that this is basically optimizing the policy for penalized MDP and tilde, which is defined to have the same learned dynamics t hat and the penalized reward are tilde, which is penalized by lambda times the answer implication of the dynamics. Some off-the-shelf algorithms can be used to optimize it. How do we implement the iso multiplication for dynamics? I've thought about this for a while, and it turns out there aren't many good ways to do iso convocation, especially under out-of-domain shift for even surprise learning. So what we do is just a heuristic. We use the ensemble to do a heuristic for UFX. We take a sample of models and look at the differences between their outputs.
 
-![cd1cdb09641cb3a7eec986d74d552523](/images/cd1cdb09641cb3a7eec986d74d552523.png)
+![cd1cdb09641cb3a7eec986d74d552523](images/cd1cdb09641cb3a7eec986d74d552523.png)
 
 有了这个配置，我们可以进行第二步，即基于模型的声音策略优化与奖励惩罚。在第二个集合中，我们试图优化π。下界e到π减去e的π可以写成r的x a减去λ的u的s的期望。由于期望下的内容相同，可以将它们合并为一个单一的期望。你会意识到，这基本上是为受惩罚的MDP和tilde优化策略，tilde被定义为具有相同学习动态t hat和受惩罚奖励的tilde，其受到动态的λ倍数的惩罚。可以使用一些现成的算法来优化它。我们如何实现动态的iso乘法？我思考了一段时间，结果发现没有太多好的方法来进行iso卷积，尤其是在域外转移和意外学习的情况下。所以我们只是使用一种启发式方法。我们使用集合来对UFX进行启发式处理。我们取样多个模型并观察它们输出之间的差异。
 
@@ -227,16 +227,12 @@ So then we measure the quality of the dynamics by estimating the distance betwee
 
 > Running a bit late, so I'll skip the slice. I start the motivated talk by talking about the trade-off between the gains and the risk of leaving batch support. We can also characterize that a little bit. Um, this is just a super simple extension of the theorem. So basically, you can characterize what the property of the policy is. It's kind of like doing some kind of trade-off between taking the risk of our maximizing the return. It just takes, uh, it's trading off between having smaller risk and maximizing the return. Here, the policy is larger than Ether star pi minus 2 lambda times absolute pi. Absolute pi is a way to measure the risk and basically you are treating all these two terms.
 
-![317f3fe511eb7174f42de2631129e376](/images/317f3fe511eb7174f42de2631129e376.png)
+![317f3fe511eb7174f42de2631129e376](images/317f3fe511eb7174f42de2631129e376.png)
 
 
 在谈论离开批量支持的收益和风险之间的权衡时，可以进行激励性的讨论。我们还可以对此进行一些特征描述。这其实只是定理的一个非常简单的扩展。基本上，你可以描述策略的特性。就像在承担风险和最大化回报之间进行某种权衡一样。这只是在小风险和最大化回报之间进行权衡。
 
 ==暂时还没看懂==
-
-
-
-
 
 ## Evaluation on D4RL dataset
 
@@ -244,7 +240,7 @@ So then we measure the quality of the dynamics by estimating the distance betwee
 >
 > So here, the kind of environments we're doing pretty well are those kind of so-called mixed or random environment, meaning that here the best data are from a mix of policy or from random policy. So, we suspect that the reason is that we are doing well when the batch data are somehow kind of like diverse. So this allows us to have a good answering classification for dynamics. The dynamics can extrapolate outside the support of the data. However, if the batch data is not diverse enough, like in a medium which means that you only have a single policy in the batch that generates the batch data, and then, the batch data is very kind of like a low dimensional, and the extrapolation of the dynamics is not good. So that's why our method is not as competitive as in other cases.
 
-![image-20231112195848143](/images/image-20231112195848143.png)
+![image-20231112195848143](images/image-20231112195848143.png)
 
 我们进行了大量的评估工作。所以这篇论文，虽然其中有一些理论，但主要是关于实证结果的。因此，我们对最近收集的默认IO数据集进行了评估，这是一个离线强化学习的基准数据集。然后我们发现，我们的结果比一些最好的批处理固定环境方法要好。
 
@@ -256,7 +252,7 @@ Out-of-distribution Offline RL Tasks
 
 >So, we also evaluated our method on the so-called auto-distribution offline RL tasks that we designed. This was to test whether our method performs well in situations where the agent has to take the risk of leaving the support of the batch data to achieve higher rewards. We designed tasks where the batch data and the task itself differ. For example, one of the tasks is called "ant-angle" where the batch data only runs forward on the right-hand side, but the task requires the agent to move in a direction with a 30-degree angle. To solve this task effectively, you have to deviate from the batch data to some extent. Another example is the "cheetah-jump" task, where the batch data shows the cheetah running forward, but the task requires the cheetah to jump slightly. This also requires leaving the batch data distribution.
 
-![b26ad0836a841e8d39702c2778420318](/images/b26ad0836a841e8d39702c2778420318.png)
+![b26ad0836a841e8d39702c2778420318](images/b26ad0836a841e8d39702c2778420318.png)
 
 此外，我们还对我们设计的所谓的自动分布离线强化学习任务进行了评估。这是为了测试我们的方法在代理需要冒险离开批处理数据支持范围以获得更高奖励的情况下是否表现良好。我们设计了一些批处理数据与任务本身不同的任务。例如，其中一个任务被称为“ant-angle”，批处理数据只朝右前方移动，但任务要求代理以30度角的方向移动。要有效解决这个任务，你必须在一定程度上偏离批处理数据。另一个例子是“cheetah-jump”任务，批处理数据显示猎豹向前奔跑，但任务要求猎豹稍微跳跃。这也需要离开批处理数据分布。
 
@@ -264,7 +260,7 @@ Out-of-distribution Offline RL Tasks
 
 > We can observe that our advantage over prior work is, in some sense, amplified, partly because prior work tends to stay within the batch data distribution.
 
-![image-20231112200652507](/images/image-20231112200652507.png)
+![image-20231112200652507](images/image-20231112200652507.png)
 
 我们可以观察到，与之前的工作相比，我们的优势在某种程度上被放大，部分原因是之前的工作倾向于保持在批处理数据分布内部。
 
@@ -283,7 +279,7 @@ Out-of-distribution Offline RL Tasks
 >
 > I'd like to spend just one minute to have some advertisements for some of my other iowa work um uh in deep enforcement learning which I spend a lot of time uh these days thinking about some of these questions. One of the work is uh we are studying the differences between model-based RL and model-free RL in terms of expressivity. We show that in many certain cases the Q function can be much more complex to express than the model itself, which suggests that model-based RL probably has some advantage over model-free RL in these kinds of cases. We are also trying to address the distribution shift in math reinforcement by using model-based ideas as well. So i guess this is all i want to say.
 
-![cefb27a7e8f74b4f929887d8b6bfbc07](/images/cefb27a7e8f74b4f929887d8b6bfbc07.png)
+![cefb27a7e8f74b4f929887d8b6bfbc07](http://106.15.139.91:40027/uploads/2312/658d4d65733f7.png)
 
 好的，所以这个演讲主要讲述离线模型基于强化学习的内容。方法是通过对动态不确定性进行奖励计数，然后优化受惩罚的虚拟环境。所以，有一些开放性问题：
 

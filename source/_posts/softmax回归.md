@@ -128,7 +128,7 @@ $$
 
 在分类问题中，模型的输出是一个概率分布向量，表示每个类别的概率。而真实标签是一个向量，其中只有一个元素为1，表示样本的真实类别。交叉熵损失通过比较模型输出的概率分布与真实标签的向量来度量模型预测的准确程度。
 
-具体来说，设模型输出的概率分布向量为$p = (p_1, p_2, ..., p_n)$，真实标签的向量表示为$y = (y_1, y_2, ..., y_n)$，其中$y_i$为0或1。交叉熵损失的计算公式如下：
+xxxxxxxxxx11 1import pickle2​3with open('./models/sentiment_classifier.pkl', 'wb') as f:4    pickle.dump(clf, f) #save5​6with open('./models/entiment_classifier.pkl', 'rb') as f:7    loaded_clf = pickle.load(f) #load8​9#apply10print(test_x[0])11loaded_clf.predict(test_x_vectors[0])python
 
 $$
 \mathrm{CE}(\mathrm{p}, \mathrm{q})=-\sum_{\mathrm{i}=1}^{\mathrm{C}} \mathrm{p}_{\mathrm{i}} \log \left(\mathrm{q}_{\mathrm{i}}\right)

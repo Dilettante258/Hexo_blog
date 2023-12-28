@@ -46,7 +46,7 @@ Model-free 的算法在一些环境下可以达到合理的性能，但它们的
 
 所有这些特性都有潜力 改善或控制 泛化。作为一个概念验证实验，我们在下图中评估了两种最先进的off-policy model-based和model-free算法，MBPO和SAC。尽管这两种方法都不是为离线强化学习而设计的，但我们发现model-based算法及其不使用 ensemble 的变体都显示出能令人惊讶的巨大增益。这一发现支持了我们的假设，表明**model-based算法特别适合于离线环境**，并激发了我们在本文中使用它们的动机。
 
-![image-20231118215137507](images/image-20231118215137507.png)
+![image-20231118215137507](http://106.15.139.91:40027/uploads/2312/658d4d1195ee9.png)
 
 > Despite these promising preliminary results, we expect significant headroom for improvement. In particular, because offline model-based algorithms cannot improve the dynamics model using additional experience, we expect that such algorithms require careful use of the model in regions outside of the data support. Quantifying the risk imposed by imperfect dynamics and appropriately trading off that risk with the return is a key ingredient towards building a strong offline model-based RL algorithm. To do so, we modify MBPO to incorporate a reward penalty based on an estimate of the model error. Crucially, this estimate is model-dependent, and does not necessarily penalize all out-of-distribution states and actions equally, but rather prescribes penalties based on the estimated magnitude of model error. Further, this estimation is done both on states and actions, allowing generalization to both, in contrast to model-free approaches that only reason about uncertainty with respect to actions.
 
@@ -177,7 +177,7 @@ $$
 
 1. 若 $\mathcal{F}$ 满足 $\mathcal{F}=\{f:\|f\|_{\infty}\leq1\}$ ，则 $d_\mathcal{F}$ 的形式是*[总变差(total variation distance) ](https://en.wikipedia.org/wiki/Total_variation_distance_of_probability_measures)*：
 
-    ![total variation distance](images/total variation distance.png)
+    ![total variation distance](http://106.15.139.91:40027/uploads/2312/658d4d11d2150.png)
 
     如上图所示，总变差是两条曲线之间绝对面积的一半，也就是上面阴影面积的一半。
 
@@ -250,7 +250,7 @@ $$
 
 在 Algorithm 1 中优化了 *不确定性惩罚的MDP $\widetilde{M}$*  的策略
 
-![image-20231118155821709](images/image-20231118155821709.png)
+![image-20231118155821709](http://106.15.139.91:40027/uploads/2312/658d4d1223031.png)
 
 ### Theoretical Guarantees for MOPO
 
@@ -282,7 +282,7 @@ $$
 $$
 证明如下：(见论文 Appendix B)
 
-![image-20231118165206094](images/image-20231118165206094.png)
+![image-20231118165206094](http://106.15.139.91:40027/uploads/2312/658d4d1266ce0.png)
 
 根据上面的 [等式 10](#10) 有结论：
 $$
@@ -360,11 +360,11 @@ $$
 
 以上部分推导的流程图如下：
 
-![image-20231119163452886](images/image-20231119163452886.png)
+![image-20231119163452886](http://106.15.139.91:40027/uploads/2312/658d4d12ac4c7.png)
 
 ## Pseudocode
 
-![image-20231118190433212](images/image-20231118190433212.png)
+![image-20231118190433212](http://106.15.139.91:40027/uploads/2312/658d4d131062e.png)
 
 #  Experiments/Conclusion/Broader Impact
 

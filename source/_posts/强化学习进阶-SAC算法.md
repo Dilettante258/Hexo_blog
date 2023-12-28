@@ -69,7 +69,7 @@ $$
 
 **SAC 中目标$Q$网络的更新方式与DDPG 中的更新方式相似。**
 
-![DDPG算法](https://img-blog.csdnimg.cn/1b316b3822a44be8a17dd82bf81374ff.png)
+![DDPG算法](http://106.15.139.91:40027/uploads/2312/658d4de7a26cf.png)
 
 `REINFORCE` 算法每隔一个 episode 就更新一次，但 DDPG 网络是每个 step 都会更新一次 policy 网络，也就是说它是一个单步更新的 policy 网络。DDPG 直接在 DQN 基础上加了一个策略网络来直接输出动作值，所以 DDPG 需要一边学习 Q 网络，一边学习策略网络。[^DDPG、TD3算法原理及实现]不过，SAC 优化策略网络的方式略有差异。
 
@@ -79,7 +79,7 @@ Deep Deterministic Policy Gradient(DDPG)的中文含义为：深度确定性策�
 
 
 
-![img](https://img-blog.csdnimg.cn/7231a364c926406382f0cf70d90176c1.png)
+![img](http://106.15.139.91:40027/uploads/2312/658d4dda378c2.png)
 
 策略$\pi$的损失函数由 KL 散度得到，化简后为：
 $$
@@ -106,11 +106,11 @@ $$
 
 算法流程：
 
-![image-20231029084812263](images/image-20231029084812263.png)
+![image-20231029084812263](http://106.15.139.91:40027/uploads/2312/658d4dd38b1a2.png)
 
 
 
-![img](https://img-blog.csdnimg.cn/20190617142028132.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RheWRheWp1bXA=,size_16,color_FFFFFF,t_70)
+![img](http://106.15.139.91:40027/uploads/2312/658d4def41e27.png)
 
 [^动手学强化学习]: https://hrl.boyuai.com/chapter/2/sac%E7%AE%97%E6%B3%95
 [^Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor]: https://arxiv.org/abs/1801.01290

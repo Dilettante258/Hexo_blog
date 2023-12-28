@@ -11,7 +11,7 @@ Himmelblau函数是一个自变量大小为(2,)的4次函数，它得名于数�
          return (x[0] ** 2 + x[1] - 11) ** 2 + (x[0] + x[1] ** 2 - 7) ** 2
 ```
 
-<img src="/images/image-20230916150428749.png" alt="Himmelblau函数" style="zoom:50%;" />
+
 
 ## 绘制Himmelblau函数图像
 
